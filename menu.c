@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int main(void){
+void menu(){
 	printf("Bienvenido a cines APJ\n");
 	char opcion;
 	while(opcion!='q'){

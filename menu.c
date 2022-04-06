@@ -31,7 +31,6 @@ void menu(sqlite3 *db,Cine* cines,Sala* salas){
 			sscanf(opcion,"%i",&opc);
 		}
 		int cont=contadorCine(db);
-		opc=2;
 		if(opc==1){
 			if(cont<MaxCine){
 				if(insertarCine(db,cont,cines)==0){
@@ -61,6 +60,15 @@ void menu(sqlite3 *db,Cine* cines,Sala* salas){
 			//int cont2=cuantaSalasCine(db, );
 			
 		//}	
+		/*
+		if (opcion=='4'){
+
+		}
+
+		if (opcion=='5'){
+			
+		}
+		*/
 	}
 
 int main(void){	
@@ -68,7 +76,7 @@ int main(void){
 	sqlite3_open("CinesAPJ.db", &db);
 	Cine *cines=(Cine*)malloc(MaxCine*sizeof(Cine));
 	Sala *salas=(Sala*)malloc((MaxCine*MaxSala)*sizeof(Sala));
-	salas=listaDeSalas(db,contadorSala(db));
+	salas=listaDeSalas(db,(MaxCine*MaxSala));
 	cines=listaDeCines(db,MaxCine);
 	menu(db,cines,salas);
 }

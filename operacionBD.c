@@ -514,9 +514,7 @@ Sala* listaDeSalas(sqlite3 *db,int taman) {
 		printf("Error preparing statement (SELECT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 	}
-	int precio;
-	Sala *sala=(Sala*)malloc(taman*sizeof(Sala));
-	int a=0;
+		int a=0;
 	do {
 		result = sqlite3_step(stmt);
 		if (result == SQLITE_ROW) {
@@ -524,7 +522,15 @@ Sala* listaDeSalas(sqlite3 *db,int taman) {
 			sala[a].codcine=sqlite3_column_int(stmt, 1);
 			sala[a].fila=sqlite3_column_int(stmt, 2);
 			sala[a].columna=sqlite3_column_int(stmt, 3);
-			//falta dimension			
+			sala[a].dimension=(int**)malloc((sala[a].columna)*sizeof(int*));
+			for(int i=0;i<sala[a].columna;i++){
+				sala[a].dimension[sal[a].columna]=(int*)malloc((sala[a])*sizeof(int));
+			}
+			for(int i=0;i<sala[a].columna;i++){
+				for(int j=0;j<sala[a].ffila;j++){
+					sala[a].dimension[i][j]=0;
+				}
+			}			
 			a++;
 
 		}
@@ -540,5 +546,53 @@ Sala* listaDeSalas(sqlite3 *db,int taman) {
 	printf("Prepared statement finalized (SELECT)\n");
 
 	return sala;
+}
+
+
+Pelicula* listaDePeliculas(sqlite3 *db,int taman){
+	sqlite3_stmt *stmt;
+
+	char sql[] = "select codPelicula,titulo,director,duracion, idioma from pelicula";
+
+	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement (SELECT)\n");
+		printf("%s\n", sqlite3_errmsg(db));
+	}
+	Pelicula *pelicula=(Pelicula*)malloc(taman*sizeof(Pelicula));
+	int a=0;
+	do {
+		result = sqlite3_step(stmt);
+		if (result == SQLITE_ROW) {
+			pelicula[a].codPelicula=sqlite3_column_int(stmt, 0);
+			int tamanyoTitulo=strlen( (char *) sqlite3_column_text(stmt, 1));
+			pelicula[a].Titulo=strlen((char*))tamanyoCiudad+1)*sizeof(char));
+			pelicula[a].Titulo=strcpy(pelicula[a].Titulo,(char*))sqlite3_column_text(stmt, 1));
+			pelicula[a].Titulo[tamanyoTitulo]='\0';
+			int tamanyoDirector=strlen( (char *) sqlite3_column_text(stmt, 2));
+			pelicula[a].Director=strlen((char*))tamanyoDirector+1)*sizeof(char));
+			pelicula[a].Director=strcpy(pelicula[a].Director,(char*))sqlite3_column_text(stmt, 2));
+			pelicula[a].Director[tamanyoDirector]='\0';
+			pelicula[a].duracion=sqlite3_column_int(stmt, 3);
+			int tamanyoIdioma=strlen( (char *) sqlite3_column_text(stmt, 4));
+			pelicula[a].idioma=strlen((char*))tamanyoIdioma+1)*sizeof(char));
+			pelicula[a].idioma=strcpy(pelicula[a].idioma,(char*))sqlite3_column_text(stmt, 4));
+			pelicula[a].idioma[tamanyoIdioma]='\0';
+			a++;
+
+		}
+	} while (result == SQLITE_ROW);
+
+	result = sqlite3_finalize(stmt);
+	if (result != SQLITE_OK) {
+		printf("Error finalizing statement (SELECT)\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		
+	}
+
+	printf("Prepared statement finalized (SELECT)\n");
+
+	return pelicula;
+
 }
 

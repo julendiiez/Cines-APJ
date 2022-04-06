@@ -66,6 +66,7 @@ int insertarCine(sqlite3 *db,int tamanyo,Cine *cines){
             return 1;
     }
 }
+
 int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines,Sala* salas){
     char str[MaxNum];
     int codCine=0;
@@ -150,7 +151,9 @@ int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines){
     }
     int cantSala=cuantaSalasCine(db,codCine);
     if(codSala>0 && codSala<=cantSala){
+
         Pelicula *peliculaA=(Pelicula*)malloc(sizeof(Pelicula));
+
         
 
          

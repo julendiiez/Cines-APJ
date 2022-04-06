@@ -1,9 +1,11 @@
 #include "sqlite3.h"
 #include <stdio.h>
-#include "OPERACIONBD.h"
+#include "operacionBD.h"
 #include <string.h>
 #include <stdlib.h>
 #include "cine.h"
+#include "sala.h"
+#include "pelicula.h"
 
 int insertarDatosSala(sqlite3 *db, int CodSala, int CodCine, int Filas, int Columnas)
 {
@@ -15,7 +17,7 @@ int insertarDatosSala(sqlite3 *db, int CodSala, int CodCine, int Filas, int Colu
 	{
 		printf("Error preparing statement (INSERT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 
 	printf("SQL query prepared (INSERT)\n");
@@ -25,35 +27,35 @@ int insertarDatosSala(sqlite3 *db, int CodSala, int CodCine, int Filas, int Colu
 	{
 		printf("Error binding parameters1\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 	result = sqlite3_bind_int(stmt, 2, CodCine);
 	if (result != SQLITE_OK)
 	{
 		printf("Error binding parameters2\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 	result = sqlite3_bind_int(stmt, 3, Filas);
 	if (result != SQLITE_OK)
 	{
 		printf("Error binding parameters3\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 	result = sqlite3_bind_int(stmt, 4, Columnas);
 	if (result != SQLITE_OK)
 	{
 		printf("Error binding parameters4\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE)
 	{
 		printf("Error inserting new data into SALA table\n");
-		return result;
+		return 0;
 	}
 
 	result = sqlite3_finalize(stmt);
@@ -61,12 +63,12 @@ int insertarDatosSala(sqlite3 *db, int CodSala, int CodCine, int Filas, int Colu
 	{
 		printf("Error finalizing statement (INSERT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 
 	printf("Prepared statement finalized (INSERT)\n");
 
-	return SQLITE_OK;
+	return 1;
 }
 
 int insertarDatosCine(sqlite3 *db, int CodCine, char Ciudad[], int precio)
@@ -395,7 +397,7 @@ int insertarDatosTransmite(sqlite3 * db, int CodSala, int CodPelicula, int Horar
 int contadorCine(sqlite3 *db){
 	sqlite3_stmt *stmt;
 
-	char sql[] = "select CodCine,Ciudad,Precio from Cine";
+	char sql[] = "Select * from Cine";
 
 	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
 	if (result != SQLITE_OK) {
@@ -405,8 +407,30 @@ int contadorCine(sqlite3 *db){
 	}
 
 	int cont=0;
-	result = sqlite3_step(stmt) ;
 	do {
+		result = sqlite3_step(stmt) ;
+		if (result == SQLITE_ROW) {
+			cont++;
+		}
+	} while (result == SQLITE_ROW);
+	return cont;
+
+}
+int contadorSala(sqlite3 *db){
+	sqlite3_stmt *stmt;
+
+	char sql[] = "Select * from Sala";
+
+	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement (SELECT)\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return result;
+	}
+
+	int cont=0;
+	do {
+		result = sqlite3_step(stmt) ;
 		if (result == SQLITE_ROW) {
 			cont++;
 		}
@@ -416,7 +440,7 @@ int contadorCine(sqlite3 *db){
 }
 
 
-Cine* listaDeCines(sqlite3 *db) {
+Cine* listaDeCines(sqlite3 *db,int taman) {
 	sqlite3_stmt *stmt;
 
 	char sql[] = "select CodCine,Ciudad,Precio from Cine";
@@ -426,18 +450,18 @@ Cine* listaDeCines(sqlite3 *db) {
 		printf("Error preparing statement (SELECT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 	}
-	int precio;
-	int cont=contadorCine(db);
-	Cine *cines=(Cine*)malloc(cont*sizeof(Cine));
-	cont=0;
+	Cine *cines=(Cine*)malloc(taman*sizeof(Cine));
+	int a=0;
 	do {
 		result = sqlite3_step(stmt) ;
 		if (result == SQLITE_ROW) {
-			cines[cont].codCine = sqlite3_column_int(stmt, 1);
-			strcpy(cines[cont].ciudad, (char *) sqlite3_column_text(stmt, 2));
-			cines[cont].precio=sqlite3_column_int(stmt, 3);
-			printf("CodCine: %i ciudad: %s precio: %i\n",cines[cont].codCine ,cines[cont].precio);
-			cont++;
+			cines[a].codCine = sqlite3_column_int(stmt, 0);
+			int tamanyoCiudad=strlen( (char *) sqlite3_column_text(stmt, 1));
+			cines[a].ciudad=(char*)malloc((tamanyoCiudad+1)*sizeof(char));
+			cines[a].ciudad=strcpy(cines[a].ciudad, (char *) sqlite3_column_text(stmt, 1));
+			cines[a].ciudad[tamanyoCiudad]='\0';
+			cines[a].precio=sqlite3_column_int(stmt, 2);
+			a++;
 
 		}
 	} while (result == SQLITE_ROW);
@@ -452,5 +476,69 @@ Cine* listaDeCines(sqlite3 *db) {
 	printf("Prepared statement finalized (SELECT)\n");
 
 	return cines;
+}
+
+int cuentaSalasCine(sqlite3 *db, int codCine){
+	sqlite3_stmt *stmt;
+
+	char sql[] = "Select * from Sala";
+
+	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement (SELECT)\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return result;
+	}
+
+	int cont=0;
+	do {
+		result = sqlite3_step(stmt) ;
+		if (result == SQLITE_ROW) {
+			if(sqlite3_column_int(stmt, 1)==codCine){
+			cont++;
+		}
+		}
+	} while (result == SQLITE_ROW);
+	return cont;
+
+}
+
+
+Sala* listaDeSalas(sqlite3 *db,int taman) {
+	sqlite3_stmt *stmt;
+
+	char sql[] = "select codSala,codCine,fila, columna from sala";
+
+	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement (SELECT)\n");
+		printf("%s\n", sqlite3_errmsg(db));
+	}
+	int precio;
+	Sala *sala=(Sala*)malloc(taman*sizeof(Sala));
+	int a=0;
+	do {
+		result = sqlite3_step(stmt);
+		if (result == SQLITE_ROW) {
+			sala[a].codSala=sqlite3_column_int(stmt, 0);
+			sala[a].codcine=sqlite3_column_int(stmt, 1);
+			sala[a].fila=sqlite3_column_int(stmt, 2);
+			sala[a].columna=sqlite3_column_int(stmt, 3);
+			//falta dimension			
+			a++;
+
+		}
+	} while (result == SQLITE_ROW);
+
+	result = sqlite3_finalize(stmt);
+	if (result != SQLITE_OK) {
+		printf("Error finalizing statement (SELECT)\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		
+	}
+
+	printf("Prepared statement finalized (SELECT)\n");
+
+	return sala;
 }
 

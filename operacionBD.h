@@ -15,5 +15,4 @@ int contadorCine(sqlite3 *db);
 int cuentaSalasCine(sqlite3 *db, int codCine);
 int contadorSala(sqlite3 *db);
 Sala* listaDeSalas(sqlite3 *db,int taman);
-
 #endif

@@ -12,7 +12,7 @@
 #define MaxLine 50
 
 
-void menu(sqlite3 *db,Cine* cines){
+void menu(sqlite3 *db,Cine* cines,Sala* salas){
 	printf("Bienvenido a cines APJ\n");
 	char opcion[10];
 	int opc=0;
@@ -47,7 +47,7 @@ void menu(sqlite3 *db,Cine* cines){
 		} else {
 		if(opc==2){
 			printf("a");
-			int result=insertarSalaACine(db,cont,MaxSala,cines);
+			int result=insertarSalaACine(db,cont,MaxSala,cines,salas);
 			if(result==1){
 				printf("La sala de cine se ha introducido en el cine correctamente\n");
 			}else{
@@ -60,18 +60,15 @@ void menu(sqlite3 *db,Cine* cines){
 			//int result=
 			//int cont2=cuantaSalasCine(db, );
 			
-		//}
-
-			
-			
-		
-
+		//}	
 	}
 
 int main(void){	
 	sqlite3 *db;
 	sqlite3_open("CinesAPJ.db", &db);
 	Cine *cines=(Cine*)malloc(MaxCine*sizeof(Cine));
+	Sala *salas=(Sala*)malloc((MaxCine*MaxSala)*sizeof(Sala));
+	salas=listaDeSalas(db,contadorSala(db));
 	cines=listaDeCines(db,MaxCine);
-	menu(db,cines);
+	menu(db,cines,salas);
 }

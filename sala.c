@@ -7,7 +7,7 @@
 #include "pelicula.h"
 
 
-int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala *sala,int MaxNum){
+int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala* sala,int MaxNum){
     char str[MaxNum];
     int fila;
     int columna;
@@ -23,7 +23,7 @@ int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala *sala,int MaxNum)
         }
         sscanf(str,"%i",&fila);
         if(fila>0 && fila<=15){
-            sala->fila=fila;
+            sala[totSala].fila=fila;
             fin=1;
 
         }else{
@@ -40,8 +40,8 @@ int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala *sala,int MaxNum)
         }
         sscanf(str,"%i",&columna);
         if(columna>0 && columna<=15){
-            sala->columna=columna;
-            int inbd=insertarDatosSala(db,sala->codSala,sala->codcine,sala->fila,sala->columna);
+            sala[totSala].columna=columna;
+            int inbd=insertarDatosSala(db,sala[totSala].codSala,sala[totSala].codcine,sala[totSala].fila,sala[totSala].columna);
             if(inbd==1){
                 printf("En la base de datos se ha introducido correctamente\n");
             }else{
@@ -54,14 +54,14 @@ int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala *sala,int MaxNum)
 
     }
 
-    sala->dimension=(int**)malloc((sala->columna)*sizeof(int*));
-    for(int i=0;i<sala->columna;i++){
-        sala->dimension[columna]=(int*)malloc((sala->fila)*sizeof(int));
+    sala[totSala].dimension=(int**)malloc((sala[totSala].columna)*sizeof(int*));
+    for(int i=0;i<sala[totSala].columna;i++){
+        sala[totSala].dimension[columna]=(int*)malloc((sala[totSala].fila)*sizeof(int));
 
     }
-    for(int i=0;i<sala->columna;i++){
-        for(int j=0;j<sala->fila;j++){
-            sala->dimension[i][j]=0;
+    for(int i=0;i<sala[totSala].columna;i++){
+        for(int j=0;j<sala[totSala].fila;j++){
+            sala[totSala].dimension[i][j]=0;
 
         }
     }

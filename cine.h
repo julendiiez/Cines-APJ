@@ -12,7 +12,7 @@ typedef struct{
 
 
 int insertarCine(sqlite3 *db,int tamanyo, Cine *cines);
-int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines);
+int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines,Sala* salas);
 
 
 #endif

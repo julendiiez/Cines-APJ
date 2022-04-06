@@ -66,8 +66,7 @@ int insertarCine(sqlite3 *db,int tamanyo,Cine *cines){
             return 1;
     }
 }
-int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines){
-    printf("a");
+int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines,Sala* salas){
     char str[MaxNum];
     int codCine=0;
     int fin=0;
@@ -87,10 +86,9 @@ int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines){
        int totSalCine=cuentaSalasCine(db,codCine);
         int totSala=contadorSala(db);
          if(totSalCine<maxSala && totSalCine>0){
-                Sala *salaA=(Sala*)malloc(sizeof(Sala));
-                salaA->codcine=codCine;
-                salaA->codSala=totSala;
-             result=insertarInforSala(db,codCine,maxSala,salaA,MaxNum);
+                salas[totSala].codcine=codCine;
+                salas[totSala].codSala=totSala;
+                result=insertarInforSala(db,codCine,maxSala,salas,MaxNum);
              if(result==1){
                  printf("Los datos se han introducido correctamente\n");
                  return 1;

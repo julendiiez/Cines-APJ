@@ -1,9 +1,10 @@
 #include "sqlite3.h"
 #include <stdio.h>
+#include "cine.h"
+
 #include "operacionBD.h"
 #include <string.h>
 #include <stdlib.h>
-#include "cine.h"
 #include "sala.h"
 #include "pelicula.h"
 
@@ -127,10 +128,10 @@ int insertarDatosCine(sqlite3 *db, int CodCine, char Ciudad[], int precio)
 
 	return SQLITE_OK;
 }
-int insertarDatosPelicula(sqlite3 *db, int CodPelicula, char Titulo[], char Director[], int duracion, char idioma[])
+int insertarDatosPelicula(sqlite3 *db, int CodPelicula, char Titulo[], char Director[], char idioma[])
 {
 	sqlite3_stmt *stmt;
-	char sql[] = "INSERT INTO Pelicula (CodPelicula,Titulo,Director,Duracion,Idioma) values (?,?,?,?,?)";
+	char sql[] = "INSERT INTO Pelicula (CodPelicula,Titulo,Director,Idioma) values (?,?,?,?,?)";
 
 	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
 	if (result != SQLITE_OK)
@@ -163,14 +164,7 @@ int insertarDatosPelicula(sqlite3 *db, int CodPelicula, char Titulo[], char Dire
 		printf("%s\n", sqlite3_errmsg(db));
 		return result;
 	}
-	result = sqlite3_bind_int(stmt, 4, duracion);
-	if (result != SQLITE_OK)
-	{
-		printf("Error binding parameters3\n");
-		printf("%s\n", sqlite3_errmsg(db));
-		return result;
-	}
-	result = sqlite3_bind_text(stmt, 5, idioma, strlen(idioma), SQLITE_STATIC);
+	result = sqlite3_bind_text(stmt, 4, idioma, strlen(idioma), SQLITE_STATIC);
 	if (result != SQLITE_OK)
 	{
 		printf("Error binding parameters2\n");
@@ -503,11 +497,35 @@ int cuentaSalasCine(sqlite3 *db, int codCine){
 
 }
 
+int cuantasPeliculas (sqlite3 *db){
+
+	sqlite3_stmt *stmt;
+
+	char sql[] = "Select * from Pelicula";
+
+	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement (SELECT)\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return result;
+	}
+
+	int cont=0;
+	do {
+		result = sqlite3_step(stmt) ;
+		if (result == SQLITE_ROW) {
+			cont++;
+		}
+	} while (result == SQLITE_ROW);
+	return cont;
+
+}
+
 
 Sala* listaDeSalas(sqlite3 *db,int taman) {
 	sqlite3_stmt *stmt;
 
-	char sql[] = "select codSala,codCine,fila, columna from sala";
+	char sql[] = "select CodSala,CodCine,Fila, Columna from Sala";
 
 	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
 	if (result != SQLITE_OK) {
@@ -552,7 +570,7 @@ Sala* listaDeSalas(sqlite3 *db,int taman) {
 Pelicula* listaDePeliculas(sqlite3 *db,int taman){
 	sqlite3_stmt *stmt;
 
-	char sql[] = "select codPelicula,titulo,director,duracion, idioma from pelicula";
+	char sql[] = "select CodPelicula,Titulo,Director,Idioma from Pelicula";
 
 	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
 	if (result != SQLITE_OK) {
@@ -573,7 +591,7 @@ Pelicula* listaDePeliculas(sqlite3 *db,int taman){
 			pelicula[a].Director=strlen((char*))tamanyoDirector+1)*sizeof(char));
 			pelicula[a].Director=strcpy(pelicula[a].Director,(char*))sqlite3_column_text(stmt, 2));
 			pelicula[a].Director[tamanyoDirector]='\0';
-			pelicula[a].duracion=sqlite3_column_int(stmt, 3);
+			pelicula[a].horaComienzo="NULL";
 			int tamanyoIdioma=strlen( (char *) sqlite3_column_text(stmt, 4));
 			pelicula[a].idioma=strlen((char*))tamanyoIdioma+1)*sizeof(char));
 			pelicula[a].idioma=strcpy(pelicula[a].idioma,(char*))sqlite3_column_text(stmt, 4));
@@ -593,6 +611,18 @@ Pelicula* listaDePeliculas(sqlite3 *db,int taman){
 	printf("Prepared statement finalized (SELECT)\n");
 
 	return pelicula;
+}
 
+
+void leerBDTransmite(sqlite3 *db,Sala *salas,Pelicula *peliculas){
+	//si esta el codsala anyadir a ese cod sala la pelicula-- NO ENTIENDO ESO que quiere decir si esta el codsala
+	//y en sala->peliculas[i].horaComienzo=horario;
+	//hacemos leer por fila de bd y hacemos un for de sala, si el codsala=codsala añadimo en el array de peliculas que tiene la sala la pelicula y a esa pelicula anyadimos la hora
+	//me estoy liando
+	//igual lo mejor es crear otro clase transmite y realizar las funciones desde alli sin tener que relacionar varias cosas
+	//y si pa simplicar una pelicula solo se echa en un horario? así no hay transmite no=?
+	//transmite debe de hhaaber para relacionar salas y peli
+	//creo que funciona como las primeras dos filas. porque al hacer un for de peliculas no se van a repetir porque lo hacemos desde la bd pelicula
+	//
 }
 

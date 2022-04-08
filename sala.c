@@ -67,3 +67,14 @@ int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala* sala,int MaxNum)
     }
     return 1;
 }
+
+int eliminarPeliculaSala(sqlite3 *db, int codCine ,int codSala, int codPelicula){
+    int numCines;
+    int numSalas;
+    int numPelis;
+    char c;
+    printf("Seleccione un cine:\n");
+    printf("Seleccione una sala\n");
+    printf("Seleccione una pelicula\n");
+
+}

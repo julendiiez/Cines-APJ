@@ -8,7 +8,7 @@ typedef struct{
     int codPelicula;
     char* Titulo;
     char* Director;
-    int duracion;
+    int horaComienzo;
     char* idioma;
 }Pelicula;
 

@@ -5,7 +5,7 @@
 #include "sala.h"
 
 int insertarDatosSala(sqlite3 *db,int CodSala, int CodCine, int Filas, int Columnas);
-int insertarDatosPelicula(sqlite3 *db,int CodPelicula,char Titulo[],char Director[],int duracion,char idioma[]);
+int insertarDatosPelicula(sqlite3 *db,int CodPelicula,char Titulo[],char Director[],char idioma[]);
 int insertarDatosCine(sqlite3 *db,int CodCine,char Ciudad[],int precio);
 int insertarDatosCompra(sqlite3 *db,int CodCompra,char Nick[],int CodPelicula,int Cantidad,int CodSala);
 int insertarDatosUsuario(sqlite3 *db,char Nick[],char Nombre[],char Contrasenya[],int dinero,int edad);
@@ -13,9 +13,10 @@ int insertarDatosTransmite(sqlite3 *db,int CodSala,int CodPelicula,int Horario);
 
 int contadorCine(sqlite3 *db);
 int contadorSala(sqlite3 *db);
+int cuantasPeliculas (sqlite3 *db);
 int cuentaSalasCine(sqlite3 *db, int codCine);
 
-Cine *listaDeCines(sqlite3 *db,int taman);
+Cine* listaDeCines(sqlite3 *db,int taman);
 Sala* listaDeSalas(sqlite3 *db,int taman);
 Pelicula* listaDePeliculas(sqlite3 *db,int taman);
 #endif

@@ -8,7 +8,7 @@ typedef struct{
     int codCine;
     int precio;
     char *ciudad;
-}Cine;
+} Cine;
 
 
 int insertarCine(sqlite3 *db,int tamanyo, Cine *cines);

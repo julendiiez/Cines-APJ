@@ -126,7 +126,7 @@ int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines,Sala*
 }
 
 
-int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines){
+int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines, Pelicula *peliculas){
     char str[MaxNum];
     int codCine=0;
     int codSala=0;
@@ -149,23 +149,57 @@ int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines){
         fgets(str,MaxNum,stdin);
         sscanf(str,"%i",&codSala);
     }
-    int cantSala=cuantaSalasCine(db,codCine);
+    fin=0;
+    int cantSala=cuentaSalasCine(db,codCine);
     if(codSala>0 && codSala<=cantSala){
+        int h=cuantasPeliculas(db);
+        while(fin!=1){
 
-        Pelicula *peliculaA=(Pelicula*)malloc(sizeof(Pelicula));
+        for (int i = 0; i < h; i++)
+        {
+            printf("CodPelicula: %i, %s titulo, %s director y %s idioma\n", peliculas[i].codPelicula, peliculas[i].Titulo, peliculas[i].Director, peliculas[i].idioma);
+        }        
+        printf("Seleccione el codpelicula que quiere anadir o pulse N para anyadir una pelicula nueva\n");
+        printf("q para cancelar\n");
+        int codPelicula=0;
+        fflush(stdout);
+        fgets(str,MaxNum,stdin);
+        if(str[0]=='N'){
+            //la funcion insertar infor
+            //en la bd guardar la peli
+        }else{
+            if(str[0]=='q'){
+            
+            
+            return 0;
+            }else{
+                sscanf(str,"%i",&codPelicula);
+                //en la bd insertar en transmite cod sala y cod pelicula
+                //habria que hacer un for a q hora si es a las 4 posicion 1, si es a las 6 posicion 2
+                //mostrar solo las horas que esten libre
+                //seria si la posiciones es null printf
+                //y si son todos con datos la sala esta llena de peliculas en todos los tramos horarios
+                
+                //pa empezar hay que hacer ya el array transmite no?No si hacemos que una pelicula esta como atributo de una sala, no hace falta.
+                //se puede relacionar la funion insertar infor peli para guardar en la bde transmite
+                //entonoecs en pelicula hay que meter un atributo nuevo hora? ya esta n q duracion?
 
+                //se está complicando asaco o me parece a mi :D
+                    //si quitamos duracion y añadimos hora comienzo facilita. Porque no hay q hacer 
+                    //un calculo de hora +duracion.entonces hay que editar la bd y pelicula para los atributos. 
+            }
+
+        }
         
 
+
+        }
+
          
-
-
     }
-
-
-
-
-
-
-}
+        }
+        
+        
+    
 
 

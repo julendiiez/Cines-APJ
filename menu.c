@@ -30,6 +30,7 @@ void menu(sqlite3 *db,Cine* cines,Sala* salas){
 		if(opcion!="q"){
 			sscanf(opcion,"%i",&opc);
 		}
+		printf("Opcion : %i\n",opc);
 		int cont=contadorCine(db);
 		if(opc==1){
 			if(cont<MaxCine){

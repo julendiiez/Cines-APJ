@@ -15,7 +15,7 @@ typedef struct{
     Pelicula *peli;
 }Sala;
 
-int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala *sala, int MaxNum);
+int insertarInforSala(sqlite3 *db,int codCine,int posicion,Cine *cines, int MaxNum);
 
 
 #endif

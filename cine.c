@@ -6,7 +6,7 @@
 #include "operacionBD.h"
 #include "sala.h"
 #include "pelicula.h"
-#define MaxLine 15
+#define MaxLine 30
 #define MaxNum 10
 
 
@@ -17,7 +17,7 @@ void clearIfNeeded(char *str, int max_line)
 	if ((strlen(str) == max_line-1) && (str[max_line-2] != '\n'))
 		while (getchar() != '\n');
 }
-int insertarCine(sqlite3 *db,int tamanyo,Cine *cines){
+int insertarCine(sqlite3 *db,int tamanyo,Cine *cines,int maxSala){
     Cine *c;
     c=(Cine*)malloc(sizeof(Cine));
     int precio;
@@ -67,11 +67,12 @@ int insertarCine(sqlite3 *db,int tamanyo,Cine *cines){
     }
 }
 
-int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines,Sala* salas){
+int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines){
     char str[MaxNum];
     int codCine=0;
     int fin=0;
     int result;
+    int pos=0;
     for(int i=0;i<tamanyoCines;i++){
         printf("CodCine: %i, %s precio: %i euros\n",cines[i].codCine,cines[i].ciudad,cines[i].precio);
     }
@@ -86,10 +87,17 @@ int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines,Sala*
     if(codCine>0 && codCine<=tamanyoCines){
        int totSalCine=cuentaSalasCine(db,codCine);
         int totSala=contadorSala(db);
+        int numCine=contadorCine(db);
          if(totSalCine<maxSala && totSalCine>0){
-                salas[totSala].codcine=codCine;
-                salas[totSala].codSala=totSala;
-                result=insertarInforSala(db,codCine,maxSala,salas,MaxNum);
+             for(int i=0;i<numCine;i++){
+                 if(cines[i].codCine==codCine){
+                    cines[i].salas[totSala].codcine=codCine;
+                    cines[i].salas[totSala].codSala=totSala;
+                    pos=i;
+                    result=insertarInforSala(db,codCine,pos,cines,MaxNum);
+             }
+             }
+        
              if(result==1){
                  printf("Los datos se han introducido correctamente\n");
                  return 1;
@@ -99,13 +107,9 @@ int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines,Sala*
         
         }else{
             if(totSalCine==0){
-                //cines[codCine-1].salas=(Sala*)malloc(maxSala*sizeof(Sala));
-                //cines[codCine-1].salas[totSalCine].codcine=codCine;
-                //cines[codCine-1].salas[totSalCine].codSala=totSala;
-                Sala *salaA=(Sala*)malloc(sizeof(Sala));
-                salaA->codcine=codCine;
-                salaA->codSala=totSala;
-                result=insertarInforSala(db,codCine,maxSala,salaA,MaxNum);
+                cines[pos].salas[totSalCine].codcine=codCine;
+                cines[pos].salas[totSalCine].codSala=totSala;
+                result=insertarInforSala(db,codCine,pos,cines,MaxNum);
                 if(result==1){
                     printf("Los datos se han introducido correctamente");
                     return 1;
@@ -126,54 +130,154 @@ int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines,Sala*
 }
 
 
-int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines, Pelicula *peliculas){
+int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines, Pelicula *peliculas,int maxPeli){
     char str[MaxNum];
-    int codCine=0;
-    int codSala=0;
+    int posCine=0;
+    int posSala=0;
+    int posPelicula=0;
+    int posHorario=0;
+    int hora=0;
     int fin=0;
+    int fin1=0;
+    int fin2=0;
+    int fin3=0;
     int result;
     for(int i=0;i<tamanyoCines;i++){
         printf("CodCine: %i, %s precio: %i euros\n",cines[i].codCine,cines[i].ciudad,cines[i].precio);
     }
-    while(fin!=1)
-    printf("Seleccione cine o q para volver\n");
-    fflush(stdout);
-    fgets(str,MaxNum,stdin);
-    if(str[0]=='q'){
-        return 0;
-    }
-
-    if(codCine>0 && codCine<=tamanyoCines){
-        printf("Seleccione sala: ");
+    while(fin!=1){
+        printf("Seleccione cine o q para volver\n");
         fflush(stdout);
         fgets(str,MaxNum,stdin);
-        sscanf(str,"%i",&codSala);
-    }
-    fin=0;
-    int cantSala=cuentaSalasCine(db,codCine);
-    if(codSala>0 && codSala<=cantSala){
-        int h=cuantasPeliculas(db);
-        while(fin!=1){
-
-        for (int i = 0; i < h; i++)
-        {
-            printf("CodPelicula: %i, %s titulo, %s director y %s idioma\n", peliculas[i].codPelicula, peliculas[i].Titulo, peliculas[i].Director, peliculas[i].idioma);
-        }        
-        printf("Seleccione el codpelicula que quiere anadir o pulse N para anyadir una pelicula nueva\n");
-        printf("q para cancelar\n");
-        int codPelicula=0;
-        fflush(stdout);
-        fgets(str,MaxNum,stdin);
-        if(str[0]=='N'){
-            //la funcion insertar infor
-            //en la bd guardar la peli
-        }else{
-            if(str[0]=='q'){
-            
-            
+        if(str[0]=='q'){
             return 0;
+        }
+        sscanf(str,"%i",&posCine);
+        if(posCine>0 && posCine<=tamanyoCines){
+            fin=1;
+        }else{
+            printf("Ese codigo de cine no existe\n");
+        }
+    }
+    int cantSala=cuentaSalasCine(db,posCine);
+    while(fin1!=1){   
+        printf("Salas del cine %i\n",posCine);
+        printf("------------------\n");
+        for(int i=0;i<cantSala;i++){
+            printf("%i. Codigo de Sala: %i, filas: %i y columnas: %i\n",(i+1),cines[posCine-1].salas[i].codSala,cines[posCine-1].salas[i].fila,cines[posCine-1].salas[i].columna);
+        }
+        printf("Seleccione sala o q para volver: \n");
+        fflush(stdout);
+        fgets(str,MaxNum,stdin);
+        if(str[0]=='q'){
+            return 0;
+        }
+        sscanf(str,"%i",&posSala);
+        if(posSala>0 && posSala<=cantSala){
+            fin1=1;
+        }else{
+            printf("Ese codigo de sala no existe\n");
+        }
+    }
+    int contPeliculas=cuantasPeliculas(db);
+    while(fin2!=1){
+        for(int i=0;i<contPeliculas;i++){
+             printf("%i. CodPelicula: %i, %s titulo, %s director y %s idioma\n",(i+1), peliculas[i].codPelicula, peliculas[i].Titulo, peliculas[i].Director, peliculas[i].idioma);
+        }
+        printf("N para anyadir seleccionar una nueva pelicula\n");
+        printf("Selecciona pelicula o q para volver\n");
+        fflush(stdout);
+        fgets(str,MaxNum,stdin);
+        if(str[0]=='q'){
+            return 0;
+        }
+        if(str[0]=='N'){
+            if(maxPeli!=contPeliculas){
+                int meteInfor=insertarInforPelicula(db,MaxLine,cuantasPeliculas+1,cines,posCine-1,posSala-1,peliculas);
+                return meteInfor;
             }else{
-                sscanf(str,"%i",&codPelicula);
+                printf("Ya se ha introducido el numero maximo de peliculas");
+            }
+            
+        }else{
+             sscanf(str,"%i",&posPelicula);
+             if(posPelicula>0 && posPelicula<contPeliculas){
+                 fin2=1;
+
+             }else{
+                 printf("El codigo introducido no es correcto");
+             }
+        }
+    }
+    int cont=0;
+    for(int i=0;i<4;i++){
+        if(cines[posCine-1].salas[posSala-1].peli[i].codPelicula=NULL){
+            if(i==0){
+                printf("1).16:00 \n");
+                cont++;
+            }
+            if(i==1){
+                printf("2). 18:00\n");
+                cont++;
+            }
+            if(i==2){
+                printf("3). 20:00\n");
+                cont++;
+            }
+            if(i==3){
+                printf("4). 22:00\n");
+                cont++;
+            }
+        }
+    }
+    if(cont==0){
+        printf("Todos los horarios estan llenos\n");
+        printf("para almacenar en esta sala primero elimina mediante la opcion 5 del menu\n");
+        return 0;
+    }else{
+        while(fin3=!1){
+            printf("Selecciona una horario o q para volver");
+            fflush(stdout);
+            fgets(str,MaxNum,stdin);
+            if(str[0]=='q'){
+                return 0;
+            }
+            sscanf(str,"%i",&posHorario);
+             if(posHorario>0 && posSala<=4){
+                 if(posHorario==1){
+                    hora=16;
+                 }
+                 if(posHorario==2){
+                     hora=18;
+                 }
+                 if(posHorario==3){
+                     hora=20;
+                 }
+                 if(posHorario==4){
+                     hora=22;
+                 }
+            fin3=1;
+            }else{
+                printf("Ese codigo de sala no existe\n");
+            }
+        }
+    }
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].codPelicula=peliculas[posPelicula-1].codPelicula;
+    int tamanTitulo=strlen(peliculas[posPelicula-1].Titulo);
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].Titulo=(char*)malloc((tamanTitulo+1)*sizeof(char));
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].Titulo=peliculas[posPelicula-1].Titulo;
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].Titulo[tamanTitulo]='\0';
+    int tamanDirector=strlen(peliculas[posPelicula-1].Director);
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].Director=(char*)malloc((tamanDirector+1)*sizeof(char));
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].Director=peliculas[posPelicula-1].Director;
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].Director[tamanDirector]='\0';
+    int tamanIdioma=strlen(peliculas[posPelicula-1].idioma);
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].idioma=(char*)malloc((tamanIdioma+1)*sizeof(char));
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].idioma=peliculas[posPelicula-1].idioma;
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].idioma[tamanIdioma]='\0';
+    cines[posCine-1].salas[posSala-1].peli[posHorario-1].horaComienzo=hora;
+    int inserTransmite=insertarDatosTransmite(db,cines[posCine-1].salas[posSala-1].codSala,cines[posCine-1].salas[posSala-1].peli[posHorario-1].codPelicula,cines[posCine-1].salas[posSala-1].peli[posHorario-1].horaComienzo);
+    return inserTransmite;
                 //en la bd insertar en transmite cod sala y cod pelicula
                 //habria que hacer un for a q hora si es a las 4 posicion 1, si es a las 6 posicion 2
                 //mostrar solo las horas que esten libre
@@ -187,19 +291,6 @@ int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines, Pelicula *pe
                 //se está complicando asaco o me parece a mi :D
                     //si quitamos duracion y añadimos hora comienzo facilita. Porque no hay q hacer 
                     //un calculo de hora +duracion.entonces hay que editar la bd y pelicula para los atributos. 
-            }
-
-        }
-        
-
-
-        }
-
-         
-    }
-        }
-        
-        
-    
+}
 
 

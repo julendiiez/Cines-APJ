@@ -10,9 +10,10 @@
 #define MaxCine 10
 #define MaxSala 5
 #define MaxLine 50
+#define MaxPeli 15
 
 
-void menu(sqlite3 *db,Cine* cines,Sala* salas){
+void menu(sqlite3 *db,Cine* cines){
 	printf("Bienvenido a cines APJ\n");
 	char opcion[10];
 	int opc=0;
@@ -34,7 +35,7 @@ void menu(sqlite3 *db,Cine* cines,Sala* salas){
 		int cont=contadorCine(db);
 		if(opc==1){
 			if(cont<MaxCine){
-				if(insertarCine(db,cont,cines)==0){
+				if(insertarCine(db,cont,cines,MaxSala)==0){
 					printf("El cine se han introducido correctamente\n");
 					printf("CodCine: %i ciudad: %s precio: %i\n",cines[cont].codCine ,cines[cont].ciudad,cines[cont].precio);
 				}else{
@@ -47,7 +48,7 @@ void menu(sqlite3 *db,Cine* cines,Sala* salas){
 		} else {
 		if(opc==2){
 			printf("a");
-			int result=insertarSalaACine(db,cont,MaxSala,cines,salas);
+			int result=insertarSalaACine(db,cont,MaxSala,cines);
 			if(result==1){
 				printf("La sala de cine se ha introducido en el cine correctamente\n");
 			}else{
@@ -76,8 +77,6 @@ int main(void){
 	sqlite3 *db;
 	sqlite3_open("CinesAPJ.db", &db);
 	Cine *cines=(Cine*)malloc(MaxCine*sizeof(Cine));
-	Sala *salas=(Sala*)malloc((MaxCine*MaxSala)*sizeof(Sala));
-	salas=listaDeSalas(db,(MaxCine*MaxSala));
-	cines=listaDeCines(db,MaxCine);
-	menu(db,cines,salas);
+	cines=listaDeCines(db,MaxCine,MaxSala);
+	menu(db,cines);
 }

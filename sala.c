@@ -5,9 +5,10 @@
 #include "sala.h"
 #include "cine.h"
 #include "pelicula.h"
+#include <string.h>
 
 
-int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala* sala,int MaxNum){
+int insertarInforSala(sqlite3 *db,int codCine,int posicion,Cine* cines,int MaxNum){
     char str[MaxNum];
     int fila;
     int columna;
@@ -23,7 +24,7 @@ int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala* sala,int MaxNum)
         }
         sscanf(str,"%i",&fila);
         if(fila>0 && fila<=15){
-            sala[totSala].fila=fila;
+            cines[posicion].salas[totSalCine].fila=fila;
             fin=1;
 
         }else{
@@ -40,8 +41,8 @@ int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala* sala,int MaxNum)
         }
         sscanf(str,"%i",&columna);
         if(columna>0 && columna<=15){
-            sala[totSala].columna=columna;
-            int inbd=insertarDatosSala(db,sala[totSala].codSala,sala[totSala].codcine,sala[totSala].fila,sala[totSala].columna);
+            cines[posicion].salas[totSalCine].columna=columna;
+            int inbd=insertarDatosSala(db,cines[posicion].salas[totSalCine].codSala,cines[posicion].salas[totSalCine].codcine,cines[posicion].salas[totSalCine].fila,cines[posicion].salas[totSalCine].columna);
             if(inbd==1){
                 printf("En la base de datos se ha introducido correctamente\n");
             }else{
@@ -51,17 +52,21 @@ int insertarInforSala(sqlite3 *db,int codCine,int maxSala,Sala* sala,int MaxNum)
         }else{
             printf("El numero de columna introducido no es correcto\n");
         }
+         cines[posicion].salas[totSalCine].peli=(Pelicula*)malloc(4*sizeof(Pelicula));
+         for(int i=0;i<4;i++){
+             cines[posicion].salas[totSalCine].peli[i].codPelicula=NULL;
+        }
 
     }
 
-    sala[totSala].dimension=(int**)malloc((sala[totSala].columna)*sizeof(int*));
-    for(int i=0;i<sala[totSala].columna;i++){
-        sala[totSala].dimension[columna]=(int*)malloc((sala[totSala].fila)*sizeof(int));
+    cines[posicion].salas[totSalCine].dimension=(int**)malloc((cines[posicion].salas[totSalCine].columna)*sizeof(int*));
+    for(int i=0;i<cines[posicion].salas[totSalCine].columna;i++){
+        cines[posicion].salas[totSalCine].dimension[columna]=(int*)malloc((cines[posicion].salas[totSalCine].fila)*sizeof(int));
 
     }
-    for(int i=0;i<sala[totSala].columna;i++){
-        for(int j=0;j<sala[totSala].fila;j++){
-            sala[totSala].dimension[i][j]=0;
+    for(int i=0;i<cines[posicion].salas[totSalCine].columna;i++){
+        for(int j=0;j<cines[posicion].salas[totSalCine].fila;j++){
+            cines[posicion].salas[totSalCine].dimension[i][j]=0;
 
         }
     }

@@ -138,7 +138,7 @@ int insertarDatosPelicula(sqlite3 *db, int CodPelicula, char Titulo[], char Dire
 	{
 		printf("Error preparing statement (INSERT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 
 	printf("SQL query prepared (INSERT)\n");
@@ -148,35 +148,35 @@ int insertarDatosPelicula(sqlite3 *db, int CodPelicula, char Titulo[], char Dire
 	{
 		printf("Error binding parameters1\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 	result = sqlite3_bind_text(stmt, 2, Titulo, strlen(Titulo), SQLITE_STATIC);
 	if (result != SQLITE_OK)
 	{
 		printf("Error binding parameters2\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 	result = sqlite3_bind_text(stmt, 3, Director, strlen(Director), SQLITE_STATIC);
 	if (result != SQLITE_OK)
 	{
 		printf("Error binding parameters2\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 	result = sqlite3_bind_text(stmt, 4, idioma, strlen(idioma), SQLITE_STATIC);
 	if (result != SQLITE_OK)
 	{
 		printf("Error binding parameters2\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE)
 	{
 		printf("Error inserting new data into Cine table\n");
-		return result;
+		return 0;
 	}
 
 	result = sqlite3_finalize(stmt);
@@ -184,12 +184,12 @@ int insertarDatosPelicula(sqlite3 *db, int CodPelicula, char Titulo[], char Dire
 	{
 		printf("Error finalizing statement (INSERT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 
 	printf("Prepared statement finalized (INSERT)\n");
 
-	return SQLITE_OK;
+	return 1;
 }
 
 int insertarDatosCompra(sqlite3 *db, int CodCompra, char Nick[], int CodPelicula, int Cantidad, int CodSala)
@@ -341,7 +341,7 @@ int insertarDatosTransmite(sqlite3 * db, int CodSala, int CodPelicula, int Horar
 	{
 		printf("Error preparing statement (INSERT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 
 	printf("SQL query prepared (INSERT)\n");
@@ -351,28 +351,28 @@ int insertarDatosTransmite(sqlite3 * db, int CodSala, int CodPelicula, int Horar
 	{
 		printf("Error binding parameters1\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 		}
 	result = sqlite3_bind_int(stmt, 2, CodPelicula);
 	if (result != SQLITE_OK)
 	{
 		printf("Error binding parameters2\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 	result = sqlite3_bind_int(stmt, 3, Horario);
 	if (result != SQLITE_OK)
 	{
 		printf("Error binding parameters3\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE)
 	{
 		printf("Error inserting new data into Cine table\n");
-		return result;
+		return 0;
 	}
 
 	result = sqlite3_finalize(stmt);
@@ -380,12 +380,12 @@ int insertarDatosTransmite(sqlite3 * db, int CodSala, int CodPelicula, int Horar
 	{
 		printf("Error finalizing statement (INSERT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return result;
+		return 0;
 	}
 
 	printf("Prepared statement finalized (INSERT)\n");
 
-	return SQLITE_OK;	
+	return 1;	
 }
 
 int contadorCine(sqlite3 *db){
@@ -434,7 +434,7 @@ int contadorSala(sqlite3 *db){
 }
 
 
-Cine* listaDeCines(sqlite3 *db,int taman) {
+Cine* listaDeCines(sqlite3 *db,int taman,int maxSala) {
 	sqlite3_stmt *stmt;
 
 	char sql[] = "select CodCine,Ciudad,Precio from Cine";
@@ -455,6 +455,7 @@ Cine* listaDeCines(sqlite3 *db,int taman) {
 			cines[a].ciudad=strcpy(cines[a].ciudad, (char *) sqlite3_column_text(stmt, 1));
 			cines[a].ciudad[tamanyoCiudad]='\0';
 			cines[a].precio=sqlite3_column_int(stmt, 2);
+			cines[a].salas=(Sala*)malloc(maxSala*sizeof(Sala));
 			a++;
 
 		}
@@ -466,6 +467,8 @@ Cine* listaDeCines(sqlite3 *db,int taman) {
 		printf("%s\n", sqlite3_errmsg(db));
 		
 	}
+	listaDeSalas(db,cines,taman);
+
 
 	printf("Prepared statement finalized (SELECT)\n");
 
@@ -522,34 +525,46 @@ int cuantasPeliculas (sqlite3 *db){
 }
 
 
-Sala* listaDeSalas(sqlite3 *db,int taman) {
+void listaDeSalas(sqlite3 *db,Cine *cines,int taman){
 	sqlite3_stmt *stmt;
 
 	char sql[] = "select CodSala,CodCine,Fila, Columna from Sala";
 
 	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
+	int *totCine=(int*)malloc(taman*sizeof(int));
+	for(int i=0;i<taman;i++){
+		totCine[i]=0;
+	}
 	if (result != SQLITE_OK) {
 		printf("Error preparing statement (SELECT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 	}
-		int a=0;
 	do {
 		result = sqlite3_step(stmt);
 		if (result == SQLITE_ROW) {
-			sala[a].codSala=sqlite3_column_int(stmt, 0);
-			sala[a].codcine=sqlite3_column_int(stmt, 1);
-			sala[a].fila=sqlite3_column_int(stmt, 2);
-			sala[a].columna=sqlite3_column_int(stmt, 3);
-			sala[a].dimension=(int**)malloc((sala[a].columna)*sizeof(int*));
-			for(int i=0;i<sala[a].columna;i++){
-				sala[a].dimension[sal[a].columna]=(int*)malloc((sala[a])*sizeof(int));
-			}
-			for(int i=0;i<sala[a].columna;i++){
-				for(int j=0;j<sala[a].ffila;j++){
-					sala[a].dimension[i][j]=0;
+			int codcine=sqlite3_column_int(stmt, 1);
+			for(int i=0;i<taman;i++){
+				if(codcine==cines[i].codCine){
+					cines[i].salas[totCine[i]].codcine=codCine;
+					cines[i].salas[totCine[i]].codSala=sqlite3_column_int(stmt, 0);
+					cines[i].salas[totCine[i]].fila=sqlite3_column_int(stmt, 2);
+					cines[i].salas[totCine[i]].columna=sqlite3_column_int(stmt, 3);
+					cines[i].salas[totCine[i]].dimension=(int**)malloc((cines[i].salas[totCine[i]].columna)*sizeof(int*));
+					for(int j=0;i<cines[i].salas[totCine[i]].columna;j++){
+						cines[i].salas[totCine[i]].dimension[j]=(int*)malloc((cines[i].salas[totCine[i]].fila)*sizeof(int));
+					}
+					for(int j=0;j<cines[i].salas[totCine[i]].columna;j++){
+						for(int k=0;k<cines[i].salas[totCine[i]].columna;k++){
+							cines[i].salas[totCine[i]].dimension[i][j]=0;
 				}
+			}
+					cines[i].salas[totCine[i]].peli=(Pelicula*)malloc(4*sizeof(Pelicula));
+					for(int i=0;i<4;i++){
+						cines[i].salas[totCine[i]].peli->codPelicula=NULL;
+					}
+					totCine[i]=totCine[i]+1;
 			}			
-			a++;
+			
 
 		}
 	} while (result == SQLITE_ROW);
@@ -563,7 +578,6 @@ Sala* listaDeSalas(sqlite3 *db,int taman) {
 
 	printf("Prepared statement finalized (SELECT)\n");
 
-	return sala;
 }
 
 

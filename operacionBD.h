@@ -16,7 +16,7 @@ int contadorSala(sqlite3 *db);
 int cuantasPeliculas (sqlite3 *db);
 int cuentaSalasCine(sqlite3 *db, int codCine);
 
-Cine* listaDeCines(sqlite3 *db,int taman);
-Sala* listaDeSalas(sqlite3 *db,int taman);
+Cine* listaDeCines(sqlite3 *db,int taman,int maxSala);
+void listaDeSalas(sqlite3 *db,Cine* cines,int taman);
 Pelicula* listaDePeliculas(sqlite3 *db,int taman);
 #endif

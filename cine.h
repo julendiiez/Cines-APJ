@@ -4,17 +4,17 @@
 #include "sala.h"
 #include "sqlite3.h"
 
-typedef struct{
+typedef struct Cine{
     int codCine;
     int precio;
     char *ciudad;
-    Sala *salas;
+    struct Sala *salas;
 } Cine;
 
 
-int insertarCine(sqlite3 *db,int tamanyo, Cine *cines,int maxSala);
-int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,Cine *cines);
-int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines, Pelicula *peliculas,int maxPeli);
-
+int insertarCine(sqlite3 *db,int tamanyo, struct Cine *cines,int maxSala);
+int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cines);
+int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines,struct Pelicula *peliculas,int maxPeli);
+int borrarPeliculaSala(sqlite3 *db, int tamanyoCines, struct Cine *cine);
 
 #endif

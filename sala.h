@@ -6,16 +6,18 @@
 #include "pelicula.h"
 
 
-typedef struct{
+typedef struct Sala{
     int codSala;
     int codcine;
     int fila;
     int columna;
     int **dimension;
-    Pelicula *peli;
+    struct Pelicula *pelis;
 }Sala;
 
-int insertarInforSala(sqlite3 *db,int codCine,int posicion,Cine *cines, int MaxNum);
 
+
+
+int insertarInforSala(sqlite3 *db,int codCine,int posicion,struct Cine* cines, int MaxNum);
 
 #endif

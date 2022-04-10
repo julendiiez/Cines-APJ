@@ -13,7 +13,7 @@
 #define MaxPeli 15
 
 
-void menu(sqlite3 *db,Cine* cines){
+void menu(sqlite3 *db,struct Cine* cines,struct Pelicula* peliculas){
 	printf("Bienvenido a cines APJ\n");
 	char opcion[10];
 	int opc=0;
@@ -45,7 +45,7 @@ void menu(sqlite3 *db,Cine* cines){
 			}else{
 				printf("Los cines estan llenos\n");
 			}
-		} else {
+		}
 		if(opc==2){
 			printf("a");
 			int result=insertarSalaACine(db,cont,MaxSala,cines);
@@ -55,28 +55,39 @@ void menu(sqlite3 *db,Cine* cines){
 				printf("No se ha insertado ninguna informacion\n");
 			}
 		}
-		}
-		}
-		//if (opcion=='3'){
-			//int result=
-			//int cont2=cuantaSalasCine(db, );
+		
+		if (opc==3){
+			int result=insertarPeliculaASala(db,cont,cines,peliculas,MaxPeli);
+			if(result==1){
+				printf("La pelicula se ha anyadido correctamente\n");
+			}else{
+				printf("No se ha insertado ninguna informacion\n");
+			}		
 			
-		//}	
-		/*
-		if (opcion=='4'){
+		}	
+		
+		if (opc==4){
 
 		}
 
-		if (opcion=='5'){
+		if (opc==5){
 			
 		}
-		*/
+		
 	}
+
+	}
+
+
 
 int main(void){	
 	sqlite3 *db;
 	sqlite3_open("CinesAPJ.db", &db);
-	Cine *cines=(Cine*)malloc(MaxCine*sizeof(Cine));
-	cines=listaDeCines(db,MaxCine,MaxSala);
-	menu(db,cines);
+	struct Pelicula* peliculas=(struct Pelicula*)malloc(MaxPeli*sizeof(struct Pelicula));
+	peliculas=listaDePeliculas(db,MaxPeli);
+	struct Cine *cines=(struct Cine*)malloc(MaxCine*sizeof(struct Cine));
+	cines=listaDeCines(db,MaxCine,MaxSala,peliculas,MaxPeli);
+	
+	menu(db,cines,peliculas);
 }
+

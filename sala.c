@@ -8,7 +8,7 @@
 #include <string.h>
 
 
-int insertarInforSala(sqlite3 *db,int codCine,int posicion,Cine* cines,int MaxNum){
+int insertarInforSala(sqlite3 *db,int codCine,int posicion,struct Cine* cines,int MaxNum){
     char str[MaxNum];
     int fila;
     int columna;
@@ -47,14 +47,15 @@ int insertarInforSala(sqlite3 *db,int codCine,int posicion,Cine* cines,int MaxNu
                 printf("En la base de datos se ha introducido correctamente\n");
             }else{
                 printf("Ha ocurrido un error al insertar en la base de datos\n");
+                return 0;
             }
             fin=1;
         }else{
             printf("El numero de columna introducido no es correcto\n");
         }
-         cines[posicion].salas[totSalCine].peli=(Pelicula*)malloc(4*sizeof(Pelicula));
+         cines[posicion].salas[totSalCine].pelis=(struct Pelicula*)malloc(4*sizeof(struct Pelicula));
          for(int i=0;i<4;i++){
-             cines[posicion].salas[totSalCine].peli[i].codPelicula=NULL;
+             cines[posicion].salas[totSalCine].pelis[i].horaComienzo=0;
         }
 
     }
@@ -71,15 +72,4 @@ int insertarInforSala(sqlite3 *db,int codCine,int posicion,Cine* cines,int MaxNu
         }
     }
     return 1;
-}
-
-int eliminarPeliculaSala(sqlite3 *db, int codCine ,int codSala, int codPelicula){
-    int numCines;
-    int numSalas;
-    int numPelis;
-    char c;
-    printf("Seleccione un cine:\n");
-    printf("Seleccione una sala\n");
-    printf("Seleccione una pelicula\n");
-
 }

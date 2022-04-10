@@ -3,11 +3,13 @@
 #include "sqlite3.h"
 #include "cine.h"
 #include "sala.h"
+#include "pelicula.h"
 
 
 
 
-typedef struct{
+
+typedef struct Pelicula{
     int codPelicula;
     char* Titulo;
     char* Director;
@@ -16,7 +18,7 @@ typedef struct{
 }Pelicula;
 
 
-int insertarInforPelicula(sqlite3 *db,int MaxLine,int codPeli,Cine *cines,int posCine,int posSala,Pelicula *pelis);
+int insertarInforPelicula(sqlite3 *db,int MaxLine,int codPeli,struct Cine *cines,int posCine,int posSala,struct Pelicula *peliculas);
 
 
 

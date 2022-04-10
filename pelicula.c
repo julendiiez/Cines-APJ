@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-int insertarInforPelicula(sqlite3 *db,int MaxLine,int codPeli,Cine *cines,int posCine,int posSala,Pelicula* pelis){
+int insertarInforPelicula(sqlite3 *db,int MaxLine,int codPeli,struct Cine *cines,int posCine,int posSala,struct Pelicula* peliculas){
     char str[MaxLine];
     int fin=0;
     int fin1=0;
@@ -53,9 +53,9 @@ int insertarInforPelicula(sqlite3 *db,int MaxLine,int codPeli,Cine *cines,int po
     }
     int cont=0;
     for(int i=0;i<4;i++){
-        if(cines[posCine].salas[posSala].peli[i].codPelicula=NULL){
+        if(cines[posCine].salas[posSala].pelis[i].horaComienzo=0){
             if(i==0){
-                printf("1).16:00 \n");
+                printf("1). 16:00 \n");
                 cont++;
             }
             if(i==1){
@@ -117,51 +117,40 @@ int insertarInforPelicula(sqlite3 *db,int MaxLine,int codPeli,Cine *cines,int po
         sscanf(str,"%i",opcFinal);
         if(opcFinal>0 &&opcFinal<3){
             if(opcFinal==1){
-                //int taman = strlen(titulo_fmt);
-	//c->ciudad = malloc((taman + 1) * sizeof(char));
-	//strcpy(c->ciudad, ciudad_fmt);
-    //c->ciudad[taman]='\0';
-	//free(ciudad_fmt);
-                cines[posCine].salas[posSala].peli[posHorario-1].codPelicula=codPeli;
+                cines[posCine].salas[posSala].pelis[posHorario-1].codPelicula=codPeli;
                 int tamanT=strlen(titulo_fmt);
-                cines[posCine].salas[posSala].peli[posHorario-1].Titulo=(char*)malloc((tamanT+1)*sizeof(char));
-                cines[posCine].salas[posSala].peli[posHorario-1].Titulo=strcpy(cines[posCine].salas[posSala].peli[posHorario-1].Titulo,titulo_fmt);
-                cines[posCine].salas[posSala].peli[posHorario-1].Titulo[tamanT]='\0';
+                cines[posCine].salas[posSala].pelis[posHorario-1].Titulo=(char*)malloc((tamanT+1)*sizeof(char));
+                cines[posCine].salas[posSala].pelis[posHorario-1].Titulo=strcpy(cines[posCine].salas[posSala].pelis[posHorario-1].Titulo,titulo_fmt);
+                cines[posCine].salas[posSala].pelis[posHorario-1].Titulo[tamanT]='\0';
                 int tamanD=strlen(director_fmt);
-                cines[posCine].salas[posSala].peli[posHorario-1].Director=(char*)malloc((tamanD+1)*sizeof(char));
-                cines[posCine].salas[posSala].peli[posHorario-1].Director=strcpy(cines[posCine].salas[posSala].peli[posHorario-1].Director,director_fmt);
-                cines[posCine].salas[posSala].peli[posHorario-1].Director[tamanD]='\0';
-                cines[posCine].salas[posSala].peli[posHorario-1].horaComienzo=hora;
+                cines[posCine].salas[posSala].pelis[posHorario-1].Director=(char*)malloc((tamanD+1)*sizeof(char));
+                cines[posCine].salas[posSala].pelis[posHorario-1].Director=strcpy(cines[posCine].salas[posSala].pelis[posHorario-1].Director,director_fmt);
+                cines[posCine].salas[posSala].pelis[posHorario-1].Director[tamanD]='\0';
+                cines[posCine].salas[posSala].pelis[posHorario-1].horaComienzo=hora;
                 int tamanI=strlen(idioma);
-                cines[posCine].salas[posSala].peli[posHorario-1].idioma=(char*)malloc((tamanI+1)*sizeof(char));
-                cines[posCine].salas[posSala].peli[posHorario-1].idioma=strcpy(cines[posCine].salas[posSala].peli[posHorario-1].idioma,idioma);
-                cines[posCine].salas[posSala].peli[posHorario-1].idioma[tamanI]='\0';
-                pelis[codPeli-1].codPelicula=codPeli;
-                pelis[codPeli-1].Titulo=(char*)malloc((tamanT+1)*sizeof(char));
-                pelis[codPeli-1].Titulo=strcpy(pelis[codPeli-1].Titulo,titulo_fmt);
-                pelis[codPeli-1].Titulo[tamanT]='\0';
+                cines[posCine].salas[posSala].pelis[posHorario-1].idioma=(char*)malloc((tamanI+1)*sizeof(char));
+                cines[posCine].salas[posSala].pelis[posHorario-1].idioma=strcpy(cines[posCine].salas[posSala].pelis[posHorario-1].idioma,idioma);
+                cines[posCine].salas[posSala].pelis[posHorario-1].idioma[tamanI]='\0';
+                peliculas[codPeli-1].codPelicula=codPeli;
+                peliculas[codPeli-1].Titulo=(char*)malloc((tamanT+1)*sizeof(char));
+                peliculas[codPeli-1].Titulo=strcpy(peliculas[codPeli-1].Titulo,titulo_fmt);
+                peliculas[codPeli-1].Titulo[tamanT]='\0';
                 free(titulo_fmt);
-                pelis[codPeli-1].Director=(char*)malloc((tamanD+1)*sizeof(char));
-                pelis[codPeli-1].Director=strcpy(pelis[codPeli-1].Director,director_fmt);
-                pelis[codPeli-1].Director[tamanD]='\0';
+                peliculas[codPeli-1].Director=(char*)malloc((tamanD+1)*sizeof(char));
+                peliculas[codPeli-1].Director=strcpy(peliculas[codPeli-1].Director,director_fmt);
+                peliculas[codPeli-1].Director[tamanD]='\0';
                 free(director_fmt);
-                pelis[codPeli-1].horaComienzo=0;
-                pelis[codPeli-1].idioma=(char*)malloc((tamanI+1)*sizeof(char));
-                pelis[codPeli-1].idioma=strcpy(pelis[codPeli-1].idioma,idioma);
-                pelis[codPeli-1].idioma[tamanI]='\0';
+                peliculas[codPeli-1].horaComienzo=0;
+                peliculas[codPeli-1].idioma=(char*)malloc((tamanI+1)*sizeof(char));
+                peliculas[codPeli-1].idioma=strcpy(peliculas[codPeli-1].idioma,idioma);
+                peliculas[codPeli-1].idioma[tamanI]='\0';
                 int insertBDtrans=insertarDatosTransmite(db,cines[posCine].salas[posSala].codSala,codPeli,hora);
-                int insertBDPeli=insertarDatosPelicula(db,codPeli,pelis[codPeli-1].Titulo,pelis[codPeli-1].Director,pelis[codPeli-1].idioma);
+                int insertBDPeli=insertarDatosPelicula(db,codPeli,peliculas[codPeli-1].Titulo,peliculas[codPeli-1].Director,peliculas[codPeli-1].idioma);
                 if(insertBDtrans==1 && insertBDPeli==1){
                     return 1;
                 }else{
                     return 0;
                 }
-                
-
-
-
-
-
 
             }
             if(opcFinal==2){

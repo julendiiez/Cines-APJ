@@ -76,7 +76,7 @@ int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cine
     for(int i=0;i<tamanyoCines;i++){
         printf("CodCine: %i, %s precio: %i euros\n",cines[i].codCine,cines[i].ciudad,cines[i].precio);
     }
-    while(fin!=1)
+    while(fin!=1){
     printf("Seleccione cine o q para volver\n");
     fflush(stdout);
     fgets(str,MaxNum,stdin);
@@ -91,12 +91,12 @@ int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cine
          if(totSalCine<maxSala && totSalCine>0){
              for(int i=0;i<numCine;i++){
                  if(cines[i].codCine==codCine){
-                    cines[i].salas[totSala].codcine=codCine;
-                    cines[i].salas[totSala].codSala=totSala;
-                    pos=i;
-                    result=insertarInforSala(db,codCine,pos,cines,MaxNum);
+                    cines[i].salas[totSalCine].codcine=codCine;
+                    cines[i].salas[totSalCine].codSala=totSala+1;
+                    result=insertarInforSala(db,codCine,i,cines,MaxNum);
              }
              }
+         
         
              if(result==1){
                  printf("Los datos se han introducido correctamente\n");
@@ -119,12 +119,15 @@ int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cine
 
             }else{
                 printf("Ya ha llegado al numero maximo de salas que se puede introducir\n");
+                return 0;
 
             }
         }
 
+   
     }else{
         printf("El codigo de cine introducido no existe\n");
+    }
     }
      
 }

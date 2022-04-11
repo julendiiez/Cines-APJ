@@ -1,8 +1,8 @@
+#include "sala.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "sqlite3.h"
 #include "operacionBD.h"
-#include "sala.h"
 #include "cine.h"
 #include "pelicula.h"
 #include <string.h>
@@ -53,12 +53,13 @@ int insertarInforSala(sqlite3 *db,int codCine,int posicion,struct Cine* cines,in
         }else{
             printf("El numero de columna introducido no es correcto\n");
         }
+    }
          cines[posicion].salas[totSalCine].pelis=(struct Pelicula*)malloc(4*sizeof(struct Pelicula));
          for(int i=0;i<4;i++){
              cines[posicion].salas[totSalCine].pelis[i].horaComienzo=0;
         }
 
-    }
+    
 
     cines[posicion].salas[totSalCine].dimension=(int**)malloc((cines[posicion].salas[totSalCine].columna)*sizeof(int*));
     for(int i=0;i<cines[posicion].salas[totSalCine].columna;i++){

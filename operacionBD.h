@@ -18,10 +18,10 @@ int contadorSala(sqlite3 *db);
 int cuantasPeliculas (sqlite3 *db);
 int cuentaSalasCine(sqlite3 *db, int codCine);
 
-struct Cine* listaDeCines(sqlite3 *db,int taman,int maxSala,struct Pelicula *peliculas,int MaxPeli);
+struct Cine* listaDeCines(sqlite3 *db,int taman,int maxSala,struct Pelicula *peliculas);
 void listaDeSalas(sqlite3 *db,struct Cine* cines,int taman);
 struct Pelicula* listaDePeliculas(sqlite3 *db,int taman);
-void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct Pelicula* peliculas,int MaxPeli);
+void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct Pelicula* peliculas);
 
 
 #endif

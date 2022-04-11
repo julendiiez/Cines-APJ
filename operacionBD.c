@@ -130,7 +130,7 @@ int insertarDatosCine(sqlite3 *db, int CodCine, char Ciudad[], int precio)
 int insertarDatosPelicula(sqlite3 *db, int CodPelicula, char Titulo[], char Director[], char idioma[])
 {
 	sqlite3_stmt *stmt;
-	char sql[] = "INSERT INTO Pelicula (CodPelicula,Titulo,Director,Idioma) values (?,?,?,?,?)";
+	char sql[] = "INSERT INTO Pelicula (CodPelicula,Titulo,Director,Idioma) values (?,?,?,?)";
 
 	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
 	if (result != SQLITE_OK)
@@ -465,10 +465,6 @@ Cine* listaDeCines(sqlite3 *db,int taman,int maxSala,struct Pelicula* peliculas)
 		printf("%s\n", sqlite3_errmsg(db));
 		
 	}
-	printf("k");
-	listaDeSalas(db,cines,taman);
-	printf("c");
-	leerBDTransmite(db,cines,taman,maxSala,peliculas);
 
 	return cines;
 }
@@ -526,28 +522,29 @@ int cuantasPeliculas (sqlite3 *db){
 void listaDeSalas(sqlite3 *db,struct Cine *cines,int taman){
 	sqlite3_stmt *stmt;
 
-	char sql[] = "select CodSala,CodCine,Fila, Columna from Sala";
+	char sql[] = "Select CodSala,CodCine,Fila,Columna from Sala";
 
 	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
 	int *totCine=(int*)malloc(taman*sizeof(int));
 	for(int i=0;i<taman;i++){
 		totCine[i]=0;
 	}
+	printf("a");
 	if (result != SQLITE_OK) {
 		printf("Error preparing statement (SELECT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 	}
-	do {
+	result = sqlite3_step(stmt);
+	do{
 		result = sqlite3_step(stmt);
 		printf("%i",result);
 		if (result == SQLITE_ROW) {
-			printf("b");
 			printf("%i",SQLITE_ROW);
 			
 			int codcine=sqlite3_column_int(stmt, 1);
+			printf("%i",codcine);
 			for(int i=0;i<taman;i++){
 				if(codcine==cines[i].codCine){
-					printf("l");
 					cines[i].salas[totCine[i]].codcine=codcine;
 					cines[i].salas[totCine[i]].codSala=sqlite3_column_int(stmt, 0);
 					cines[i].salas[totCine[i]].fila=sqlite3_column_int(stmt, 2);
@@ -577,8 +574,7 @@ void listaDeSalas(sqlite3 *db,struct Cine *cines,int taman){
 
 			}
 		}
-	} while (result == SQLITE_ROW);
-	printf("KÑ");
+	}while(result == SQLITE_ROW);
 
 	result = sqlite3_finalize(stmt);
 	if (result != SQLITE_OK) {
@@ -586,6 +582,7 @@ void listaDeSalas(sqlite3 *db,struct Cine *cines,int taman){
 		printf("%s\n", sqlite3_errmsg(db));
 		
 	}
+	printf("w");
 
 
 }
@@ -647,7 +644,6 @@ void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct
 	char sql[] = "select CodSala,CodPelicula,Horario from Transmite";
 
 	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
-	
 	if (result != SQLITE_OK) {
 		printf("Error preparing statement (SELECT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
@@ -659,7 +655,8 @@ void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct
 	int tamanT;
 	int tamanI;
 	int cantPeli=cuantasPeliculas(db);
-	do {
+	result = sqlite3_step(stmt);
+	while(result == SQLITE_ROW){
 		result = sqlite3_step(stmt);
 		if (result == SQLITE_ROW) {
 			int codSala=sqlite3_column_int(stmt, 0);
@@ -710,7 +707,7 @@ void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct
 							cines[i].salas[j].pelis[1].Titulo=(char*)malloc((tamanT+1)*sizeof(char));
 							cines[i].salas[j].pelis[1].Titulo=strcpy(cines[i].salas[j].pelis[0].Titulo,titulo1);
 							cines[i].salas[j].pelis[1].Titulo[tamanT]='\0';
-							cines[i].salas[j].pelis[1].horaComienzo=16;
+							cines[i].salas[j].pelis[1].horaComienzo=18;
 							cines[i].salas[j].pelis[1].idioma=(char*)malloc((tamanI+1)*sizeof(char));
 							cines[i].salas[j].pelis[1].idioma=strcpy(idioma1,peliculas[i].idioma);
 							cines[i].salas[j].pelis[1].idioma[tamanI]='\0';
@@ -725,7 +722,7 @@ void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct
 							cines[i].salas[j].pelis[2].Titulo=(char*)malloc((tamanT+1)*sizeof(char));
 							cines[i].salas[j].pelis[2].Titulo=strcpy(cines[i].salas[j].pelis[0].Titulo,titulo1);
 							cines[i].salas[j].pelis[2].Titulo[tamanT]='\0';
-							cines[i].salas[j].pelis[2].horaComienzo=16;
+							cines[i].salas[j].pelis[2].horaComienzo=20;
 							cines[i].salas[j].pelis[2].idioma=(char*)malloc((tamanI+1)*sizeof(char));
 							cines[i].salas[j].pelis[2].idioma=strcpy(idioma1,peliculas[i].idioma);
 							cines[i].salas[j].pelis[2].idioma[tamanI]='\0';
@@ -739,7 +736,7 @@ void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct
 							cines[i].salas[j].pelis[3].Titulo=(char*)malloc((tamanT+1)*sizeof(char));
 							cines[i].salas[j].pelis[3].Titulo=strcpy(cines[i].salas[j].pelis[0].Titulo,titulo1);
 							cines[i].salas[j].pelis[3].Titulo[tamanT]='\0';
-							cines[i].salas[j].pelis[3].horaComienzo=16;
+							cines[i].salas[j].pelis[3].horaComienzo=22;
 							cines[i].salas[j].pelis[3].idioma=(char*)malloc((tamanI+1)*sizeof(char));
 							cines[i].salas[j].pelis[3].idioma=strcpy(idioma1,peliculas[i].idioma);
 							cines[i].salas[j].pelis[3].idioma[tamanI]='\0';
@@ -752,7 +749,7 @@ void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct
 				
 			}
 	
-	}while (result == SQLITE_ROW);
+	}
 
 	result = sqlite3_finalize(stmt);
 	if (result != SQLITE_OK) {
@@ -777,10 +774,9 @@ int borrarPeliculaDeSala(sqlite3 *db,int codSala,int codPelicula,int hora){
 		printf("Error preparing statement (Delete)\n");
 		printf("%s\n", sqlite3_errmsg(db));
 	}
-	//PreparedStatment statement = con.prepareStatement(sql); 
-	result = sqlite3_bind_int(stmt, 1, codSala);
-	result = sqlite3_bind_int(stmt, 2, codPelicula);
-	result=sqlite3_bind_int(stmt, 3, hora);
+	result = sqlite3_bind_int(stmt, 0, codSala);
+	result = sqlite3_bind_int(stmt, 1, codPelicula);
+	result=sqlite3_bind_int(stmt, 2, hora);
  	
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE)

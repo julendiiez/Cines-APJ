@@ -68,7 +68,37 @@ void menu(sqlite3 *db,struct Cine* cines,struct Pelicula* peliculas){
 		}	
 		
 		if (opc==4){
-
+			while(opcion[0]!='q'){
+					opc=0;
+					printf("1.Crear Fichero\n");
+					printf("2.Leer Fichero\n");
+					printf("q salir\n");
+					printf("Selecciona una opcion\n");
+					fflush(stdout);
+					fgets(opcion,MaxLine,stdin);
+					if(opcion[0]=='q'){
+					}else{	
+						sscanf(opcion,"%i",&opc);
+						int cont=contadorCine(db);
+						if(opc==1){
+							int result=crearFichero(db,cont,MaxSala,cines);
+							if(result==0){
+								printf("El fichero se ha creado correctamente\n");
+							}else{
+								printf("No se ha creado ningun fichero\n");
+							}
+						}
+						if (opc==2){
+							int result1=leerFichero(db,cont,MaxSala,cines);
+							if(result1==0){
+								printf("El fichero se ha leido correctamente\n");
+							}else{
+								printf("No se detecta nigun fichero\n");
+							}
+						}	
+					}
+				}
+			}
 		}
 
 		if (opc==5){
@@ -95,6 +125,8 @@ int main(void){
 	peliculas=listaDePeliculas(db,MaxPeli);
 	struct Cine *cines=(struct Cine*)malloc(MaxCine*sizeof(struct Cine));
 	cines=listaDeCines(db,MaxCine,MaxSala,peliculas);
+	listaDeSalas(db,cines,MaxCine);
+	leerBDTransmite(db,cines,MaxCine,MaxSala,peliculas);
 	menu(db,cines,peliculas);
 }
 

@@ -160,6 +160,10 @@ int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,struct Cine *cines, struc
         }
     }
     int cantSala=cuentaSalasCine(db,posCine);
+    if(cantSala==0){
+        printf("Este cine no dispone de salas\n");
+        return 0;
+    }
     while(fin1!=1){   
         printf("Salas del cine %i\n",posCine);
         printf("------------------\n");
@@ -201,7 +205,7 @@ int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,struct Cine *cines, struc
             
         }else{
              sscanf(str,"%i",&posPelicula);
-             if(posPelicula>0 && posPelicula<contPeliculas){
+             if(posPelicula>0 && posPelicula<=contPeliculas){
                  fin2=1;
 
              }else{
@@ -235,7 +239,7 @@ int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,struct Cine *cines, struc
         printf("para almacenar en esta sala primero elimina mediante la opcion 5 del menu\n");
         return 0;
     }else{
-        while(fin3=!1){
+        while(fin3!=1){
             printf("Selecciona una horario o q para volver");
             fflush(stdout);
             fgets(str,MaxNum,stdin);
@@ -355,6 +359,11 @@ int borrarPeliculaSala(sqlite3 *db,int tamanyoCines,struct Cine *cines){
                 if(cines[posCine-1].salas[posSala-1].pelis[posHorario-1].horaComienzo!=0){
                     int result=borrarPeliculaDeSala(db,cines[posCine-1].salas[posSala-1].codSala,cines[posCine-1].salas[posSala-1].pelis[posHorario-1].codPelicula,cines[posCine-1].salas[posSala-1].pelis[posHorario-1].horaComienzo);
                     cines[posCine-1].salas[posSala-1].pelis[posHorario-1].horaComienzo=0;
+                    if(result==1){
+                        return 1;
+                    }else{
+                        return 0;
+                    }
 
                 }else{
                    printf("Esa sala no contiene ninguna peli");
@@ -362,9 +371,131 @@ int borrarPeliculaSala(sqlite3 *db,int tamanyoCines,struct Cine *cines){
             }
         }
     }
-    
+}
 
+int crearFichero(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cines){
+    FILE *fCines;
+    FILE *fSalas;
+    char str[MaxNum];
+    int codCine=0;
+    int fin=0;
+    int result;
+    int pos=0;
+    int posCine=0;
+    int posSala=0;
+    int fin1=0;
 
+    int opc=0;
+	char opcion[10];
+	
+	while(opcion[0]!='q'){
+		opc=0;
+		printf("1.Fichero de CINES\n");
+		printf("2.Fichero de SALAS\n");
+		printf("q salir\n");
+		printf("Selecciona una opcion\n");
+		fflush(stdout);
+		fgets(opcion,MaxLine,stdin);
+		if(opcion[0]=='q'){
+		}else{	
+			sscanf(opcion,"%i",&opc);
+			int cont=contadorCine(db);
+			if(opc==1){
+				fCines=fopen("Cines.txt", "w");
+                for(int i=0;i<tamanyoCines;i++){
+                    fprintf(fCines, "CodCine: %i, %s precio: %i euros\n",cines[i].codCine,cines[i].ciudad,cines[i].precio);
+                }
+                fclose(fCines);
+                return 0;
+			}
+            if(opc==2){
+                for(int i=0;i<tamanyoCines;i++){
+                    printf("CodCine: %i, %s precio: %i euros\n",cines[i].codCine,cines[i].ciudad,cines[i].precio);
+                }
+                while(fin!=1){
+                    printf("Seleccione cine del cual ver sus salas en el fichero\n");
+                    printf("o q para volver\n");
+                    fflush(stdout);
+                    fgets(str,MaxNum,stdin);
+                    if(str[0]=='q'){
+                        return 0;
+                    }
+                    sscanf(str,"%i",&posCine);
+                    if(posCine>0 && posCine<=tamanyoCines){
+                        fin=1;
+                    }else{
+                        printf("Ese codigo de cine no existe\n");
+                    }
+                }
+                int cantSala=cuentaSalasCine(db,posCine);
+                while(fin1!=1){   
+                    fSalas=fopen("Salas.txt", "w");
+                    for(int i=0;i<cantSala;i++){
+                        fprintf(fSalas, "%i. Codigo de Sala: %i, filas: %i y columnas: %i\n",(i+1),cines[posCine-1].salas[i].codSala,cines[posCine-1].salas[i].fila,cines[posCine-1].salas[i].columna);
+                    }
+                    fclose(fSalas);
+                    return 0;
+                }	
+			}
+        }
+    }
+}
+
+int leerFichero(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cines){
+    FILE *fCines;
+    FILE *fSalas;
+    char str[MaxNum];
+    int codCine=0;
+    int fin=0;
+    int result;
+    int pos=0;
+    int posCine=0;
+    int posSala=0;
+    int fin1=0;
+
+    int opc=0;
+	char opcion[10];
+
+    while(opcion[0]!='q'){
+		opc=0;
+		printf("1.Leer Fichero de CINES\n");
+		printf("2.Leer Fichero de SALAS\n");
+		printf("q salir\n");
+		printf("Selecciona una opcion\n");
+		fflush(stdout);
+		fgets(opcion,MaxLine,stdin);
+		if(opcion[0]=='q'){
+		}else{	
+			sscanf(opcion,"%i",&opc);
+			int cont=contadorCine(db);
+			if(opc==1){
+                char c1;
+                int num_lines1=0;
+				fCines=fopen("Cines.txt","r");
+                while((c1=fgetc(fCines))!=EOF){
+                    if(c1=='\n'){
+                        num_lines1++;
+                    }
+                    putchar(c1);
+                }
+                fclose(fCines);
+                printf("El fichero de Cines tiene: %i lineas\n", num_lines1);
+			}
+            if(opc==2){
+                char c2;
+                int num_lines2=0;
+				fCines=fopen("Salas.txt","r");
+                while((c2=fgetc(fSalas))!=EOF){
+                    if(c2=='\n'){
+                        num_lines2++;
+                    }
+                    putchar(c2);
+                }
+                fclose(fSalas);
+                printf("El fichero de Salas tiene: %i lineas\n", num_lines2);
+			}
+        }
+    }
 }
 
 

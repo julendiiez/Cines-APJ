@@ -35,25 +35,40 @@ int insertarInforPelicula(sqlite3 *db,int MaxLine,int codPeli,struct Cine *cines
         printf("Seleccionar un idioma\n");
         fflush(stdout);
         fgets(str,MaxLine,stdin);
-        sscanf(str,"%i",idiomaSelec);
+        sscanf(str,"%i",&idiomaSelec);
         if(idiomaSelec>0 && idiomaSelec<=3){
             if(idiomaSelec==1){
-                idioma="Castellano";
+                char* idioma1="Castellano";
+                int taman=strlen(idioma1);
+                idioma=(char*)malloc((taman+1)*sizeof(char));
+                idioma=strcpy(idioma,idioma1);
+                idioma[taman]='\0';
+                fin=1;
             }
             if(idiomaSelec==2){
-                idioma="Euskera";
+                char* idioma1="Euskera";
+                int taman=strlen(idioma1);
+                idioma=(char*)malloc((taman+1)*sizeof(char));
+                idioma=strcpy(idioma,idioma1);
+                idioma[taman]='\0';
+                fin=1;
             }
             if(idiomaSelec==3){
-                idioma="Ingles";
+                char* idioma1="Ingles";
+                int taman=strlen(idioma1);
+                idioma=(char*)malloc((taman+1)*sizeof(char));
+                idioma=strcpy(idioma,idioma1);
+                idioma[taman]='\0';
+                fin=1;
             } 
-            fin=1;   
+               
         }else{
             printf("El numero seleccionado no es correcto\n");
         } 
     }
     int cont=0;
     for(int i=0;i<4;i++){
-        if(cines[posCine].salas[posSala].pelis[i].horaComienzo=0){
+        if(cines[posCine].salas[posSala].pelis[i].horaComienzo==0){
             if(i==0){
                 printf("1). 16:00 \n");
                 cont++;
@@ -77,7 +92,7 @@ int insertarInforPelicula(sqlite3 *db,int MaxLine,int codPeli,struct Cine *cines
         printf("para almacenar en esta sala primero elimina mediante la opcion 5 del menu\n");
         return 0;
     }else{
-        while(fin1=!1){
+        while(fin1!=1){
             printf("Selecciona una horario o q para volver");
             fflush(stdout);
             fgets(str,MaxLine,stdin);
@@ -106,15 +121,15 @@ int insertarInforPelicula(sqlite3 *db,int MaxLine,int codPeli,struct Cine *cines
     
 
     while(fin2!=1){
-        printf("1.ConfirmarDatos");
-        printf("2.Visualizar");
-        printf("q.Cancelar");
+        printf("1.ConfirmarDatos\n");
+        printf("2.Visualizar\n");
+        printf("q.Cancelar\n");
         fflush(stdout);
         fgets(str,MaxLine,stdin);
         if(str[0]=='q'){
             return 0;
         }
-        sscanf(str,"%i",opcFinal);
+        sscanf(str,"%i",&opcFinal);
         if(opcFinal>0 &&opcFinal<3){
             if(opcFinal==1){
                 cines[posCine].salas[posSala].pelis[posHorario-1].codPelicula=codPeli;

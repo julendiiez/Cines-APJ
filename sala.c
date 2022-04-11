@@ -57,25 +57,13 @@ int insertarInforSala(sqlite3 *db,int codCine,int posicion,struct Cine* cines,in
             printf("El numero de columna introducido no es correcto\n");
         }
     }
-    printf("b");
     cines[posicion].salas[totSalCine].pelis=(struct Pelicula*)malloc(4*sizeof(struct Pelicula));
     for(int i=0;i<4;i++){
         cines[posicion].salas[totSalCine].pelis[i].horaComienzo=0;
     }
-    printf("c");
     cines[posicion].salas[totSalCine].dimension=(int**)malloc((cines[posicion].salas[totSalCine].columna)*sizeof(int*));
     for(int i=0;i<cines[posicion].salas[totSalCine].columna;i++){
         cines[posicion].salas[totSalCine].dimension[columna]=(int*)malloc((cines[posicion].salas[totSalCine].fila)*sizeof(int));
-        printf("o");
     }
-    for(int i=0;i<cines[posicion].salas[totSalCine].columna;i++){
-        printf("z");
-        for(int j=0;j<cines[posicion].salas[totSalCine].fila;j++){
-            cines[posicion].salas[totSalCine].dimension[i][j]=0;
-            printf("h");
-
-        }
-    }
-    printf("a");
     return 1;
 }

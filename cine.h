@@ -16,5 +16,7 @@ int insertarCine(sqlite3 *db,int tamanyo, struct Cine *cines,int maxSala);
 int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cines);
 int insertarPeliculaASala(sqlite3 *db,int tamanyoCines,Cine *cines,struct Pelicula *peliculas,int maxPeli);
 int borrarPeliculaSala(sqlite3 *db, int tamanyoCines, struct Cine *cine);
+int leerFichero(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cines);
+int crearFichero(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cines);
 
 #endif

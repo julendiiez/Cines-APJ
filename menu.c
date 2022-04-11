@@ -68,8 +68,8 @@ void menu(sqlite3 *db,struct Cine* cines,struct Pelicula* peliculas){
 		}	
 		
 		if (opc==4){
-			while(opcion[0]!='q'){
-					opc=0;
+			char opcion1[10];
+			while(opcion1[0]!='q'){
 					printf("1.Crear Fichero\n");
 					printf("2.Leer Fichero\n");
 					printf("q salir\n");
@@ -99,14 +99,14 @@ void menu(sqlite3 *db,struct Cine* cines,struct Pelicula* peliculas){
 					}
 				}
 			}
-		}
+		
 
 		if (opc==5){
 			int result=borrarPeliculaSala(db,cont,cines);
 			if(result==1){
-				printf("La pelicula se ha anyadido correctamente\n");
+				printf("La pelicula se ha borrado correctamente\n");
 			}else{
-				printf("No se ha insertado ninguna informacion\n");
+				printf("No se ha borrado informacion\n");
 			}
 
 		}

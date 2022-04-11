@@ -529,7 +529,6 @@ void listaDeSalas(sqlite3 *db,struct Cine *cines,int taman){
 	for(int i=0;i<taman;i++){
 		totCine[i]=0;
 	}
-	printf("a");
 	if (result != SQLITE_OK) {
 		printf("Error preparing statement (SELECT)\n");
 		printf("%s\n", sqlite3_errmsg(db));
@@ -537,12 +536,10 @@ void listaDeSalas(sqlite3 *db,struct Cine *cines,int taman){
 	result = sqlite3_step(stmt);
 	do{
 		result = sqlite3_step(stmt);
-		printf("%i",result);
 		if (result == SQLITE_ROW) {
 			printf("%i",SQLITE_ROW);
 			
 			int codcine=sqlite3_column_int(stmt, 1);
-			printf("%i",codcine);
 			for(int i=0;i<taman;i++){
 				if(codcine==cines[i].codCine){
 					cines[i].salas[totCine[i]].codcine=codcine;
@@ -554,7 +551,6 @@ void listaDeSalas(sqlite3 *db,struct Cine *cines,int taman){
 					for(int j=0;j<cines[i].salas[totCine[i]].columna;j++){
 					
 						cines[i].salas[totCine[i]].dimension[j]=(int*)malloc((cines[i].salas[totCine[i]].fila)*sizeof(int));
-						;
 					}
 					for(int j=0;j<cines[i].salas[totCine[i]].columna;j++){
 						for(int k=0;k<cines[i].salas[totCine[i]].columna;k++){
@@ -582,7 +578,6 @@ void listaDeSalas(sqlite3 *db,struct Cine *cines,int taman){
 		printf("%s\n", sqlite3_errmsg(db));
 		
 	}
-	printf("w");
 
 
 }
@@ -766,6 +761,8 @@ void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct
 
 int borrarPeliculaDeSala(sqlite3 *db,int codSala,int codPelicula,int hora){
 	sqlite3_stmt *stmt;
+
+
 
 	char sql[] = "DELETE from Transmite where CodSala =? and CodPelicula=? and Horario=?";	
 

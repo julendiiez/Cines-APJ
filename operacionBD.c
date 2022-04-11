@@ -1,7 +1,7 @@
+#include "operacionBD.h"
 #include "sqlite3.h"
 #include <stdio.h>
 #include "cine.h"
-#include "operacionBD.h"
 #include <string.h>
 #include <stdlib.h>
 #include "sala.h"
@@ -465,7 +465,9 @@ Cine* listaDeCines(sqlite3 *db,int taman,int maxSala,struct Pelicula* peliculas)
 		printf("%s\n", sqlite3_errmsg(db));
 		
 	}
+	printf("k");
 	listaDeSalas(db,cines,taman);
+	printf("c");
 	leerBDTransmite(db,cines,taman,maxSala,peliculas);
 
 	return cines;
@@ -537,34 +539,46 @@ void listaDeSalas(sqlite3 *db,struct Cine *cines,int taman){
 	}
 	do {
 		result = sqlite3_step(stmt);
+		printf("%i",result);
 		if (result == SQLITE_ROW) {
+			printf("b");
+			printf("%i",SQLITE_ROW);
+			
 			int codcine=sqlite3_column_int(stmt, 1);
 			for(int i=0;i<taman;i++){
 				if(codcine==cines[i].codCine){
+					printf("l");
 					cines[i].salas[totCine[i]].codcine=codcine;
 					cines[i].salas[totCine[i]].codSala=sqlite3_column_int(stmt, 0);
 					cines[i].salas[totCine[i]].fila=sqlite3_column_int(stmt, 2);
 					cines[i].salas[totCine[i]].columna=sqlite3_column_int(stmt, 3);
 					cines[i].salas[totCine[i]].dimension=(int**)malloc((cines[i].salas[totCine[i]].columna)*sizeof(int*));
+					
 					for(int j=0;j<cines[i].salas[totCine[i]].columna;j++){
+					
 						cines[i].salas[totCine[i]].dimension[j]=(int*)malloc((cines[i].salas[totCine[i]].fila)*sizeof(int));
+						;
 					}
 					for(int j=0;j<cines[i].salas[totCine[i]].columna;j++){
 						for(int k=0;k<cines[i].salas[totCine[i]].columna;k++){
-							cines[i].salas[totCine[i]].dimension[i][j]=0;
-				}
-			}
+							
+							cines[i].salas[totCine[i]].dimension[j][k]=0;
+						}
+
+					}
 					cines[i].salas[totCine[i]].pelis=(Pelicula*)malloc(4*sizeof(Pelicula));
 					for(int k=0;k<4;k++){
 						cines[i].salas[totCine[i]].pelis[k].horaComienzo=0;
 					}
 					totCine[i]=totCine[i]+1;
-			}			
+			
+				}			
 			
 
-		}
+			}
 		}
 	} while (result == SQLITE_ROW);
+	printf("KÑ");
 
 	result = sqlite3_finalize(stmt);
 	if (result != SQLITE_OK) {
@@ -753,59 +767,35 @@ void leerBDTransmite(sqlite3 *db,struct Cine *cines,int taman,int MaxSala,struct
 
 
 
-int borrarPeliculaDeSala(sqlite3 *db,int tamanyoCines,struct Cine* cines){
+int borrarPeliculaDeSala(sqlite3 *db,int codSala,int codPelicula,int hora){
 	sqlite3_stmt *stmt;
 
-	char sql[] = "DELETE CodSala, CodPelicula, Horario from Transmite WHERE CodSala=?, codPelicula=?, Horario=?";
-					delete from Transmite where CodPelicula =?, and 
+	char sql[] = "DELETE from Transmite where CodSala =? and CodPelicula=? and Horario=?";	
 
-	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
-	if (result != SQLITE_OK)
-	{
-		printf("Error preparing statement (DELETE)\n");
+	int result = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) ;
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement (Delete)\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return 0;
 	}
-
-	printf("SQL query prepared (DELETE)\n");
-
-	result = sqlite3_bind_int(stmt, 1, CodSala);
-	if (result != SQLITE_OK)
-	{
-		printf("Error binding parameters1\n");
-		printf("%s\n", sqlite3_errmsg(db));
-		return 0;
-		}
-	result = sqlite3_bind_int(stmt, 2, CodPelicula);
-	if (result != SQLITE_OK)
-	{
-		printf("Error binding parameters2\n");
-		printf("%s\n", sqlite3_errmsg(db));
-		return 0;
-	}
-	result = sqlite3_bind_int(stmt, 3, Horario);
-	if (result != SQLITE_OK)
-	{
-		printf("Error binding parameters3\n");
-		printf("%s\n", sqlite3_errmsg(db));
-		return 0;
-	}
-
+	//PreparedStatment statement = con.prepareStatement(sql); 
+	result = sqlite3_bind_int(stmt, 1, codSala);
+	result = sqlite3_bind_int(stmt, 2, codPelicula);
+	result=sqlite3_bind_int(stmt, 3, hora);
+ 	
 	result = sqlite3_step(stmt);
 	if (result != SQLITE_DONE)
 	{
-		printf("Error deleting data from Transmite table\n");
+		printf("Error deleting data into SALA table\n");
 		return 0;
 	}
 
+ 	
 	result = sqlite3_finalize(stmt);
-	if (result != SQLITE_OK)
-	{
+	if (result != SQLITE_OK) {
 		printf("Error finalizing statement (DELETE)\n");
 		printf("%s\n", sqlite3_errmsg(db));
-		return 0;
+		
 	}
-
 	printf("Prepared statement finalized (DELETE)\n");
 
 	return 1;

@@ -32,53 +32,59 @@ void menu(sqlite3 *db,struct Cine* cines,struct Pelicula* peliculas){
 		fflush(stdin);
 		if(opcion[0]=='q'){
 			printf("Gracias por utilizar el programa\n");
-		}else{	
-			sscanf(opcion,"%i",&opc);
-			int cont=contadorCine(db);
-			if(opc==1){
-				if(cont<MaxCine){
-					if(insertarCine(db,cont,cines,MaxSala)==0){
-						printf("El cine se han introducido correctamente\n");
-						printf("CodCine: %i ciudad: %s precio: %i\n",cines[cont].codCine ,cines[cont].ciudad,cines[cont].precio);
-					}else{
-						printf("Se ha cancelado la introduccion\n");
-						printf("\n");
-					}
+		}	
+		sscanf(opcion,"%i",&opc);
+		int cont=contadorCine(db);
+		if(opc==1){
+			if(cont<MaxCine){
+				if(insertarCine(db,cont,cines,MaxSala)==0){
+					printf("El cine se han introducido correctamente\n");
+					printf("CodCine: %i ciudad: %s precio: %i\n",cines[cont].codCine ,cines[cont].ciudad,cines[cont].precio);
 				}else{
-					printf("Los cines estan llenos\n");
+					printf("Se ha cancelado la introduccion\n");
+					printf("\n");
 				}
+			}else{
+				printf("Los cines estan llenos\n");
 			}
-			if(opc==2){
-				int result=insertarSalaACine(db,cont,MaxSala,cines);
-				if(result==1){
-					printf("La sala de cine se ha introducido en el cine correctamente\n");
-				}else{
-					printf("No se ha insertado ninguna informacion\n");
-				}
-			}
-		
-			if (opc==3){
-				int result=insertarPeliculaASala(db,cont,cines,peliculas,MaxPeli);
-				if(result==1){
-					printf("La pelicula se ha anyadido correctamente\n");
-				}else{
-					printf("No se ha insertado ninguna informacion\n");
-				}		
-			
-			}	
-		
-			if (opc==4){
-
-			}
-
-			if (opc==5){
-			
-			}
-		
 		}
-	}
+		if(opc==2){
+			int result=insertarSalaACine(db,cont,MaxSala,cines);
+			if(result==1){
+				printf("La sala de cine se ha introducido en el cine correctamente\n");
+			}else{
+				printf("No se ha insertado ninguna informacion\n");
+			}
+		}
+		
+		if (opc==3){
+			int result=insertarPeliculaASala(db,cont,cines,peliculas,MaxPeli);
+			if(result==1){
+				printf("La pelicula se ha anyadido correctamente\n");
+			}else{
+				printf("No se ha insertado ninguna informacion\n");
+			}		
+		
+		}	
+		
+		if (opc==4){
 
+		}
+
+		if (opc==5){
+			int result=borrarPeliculaSala(db,cont,cines);
+			if(result==1){
+				printf("La pelicula se ha anyadido correctamente\n");
+			}else{
+				printf("No se ha insertado ninguna informacion\n");
+			}
+
+		}
+		
 	}
+}
+
+	
 
 
 

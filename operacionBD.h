@@ -11,7 +11,7 @@ int insertarDatosCine(sqlite3 *db,int CodCine,char Ciudad[],int precio);
 int insertarDatosCompra(sqlite3 *db,int CodCompra,char Nick[],int CodPelicula,int Cantidad,int CodSala);
 int insertarDatosUsuario(sqlite3 *db,char Nick[],char Nombre[],char Contrasenya[],int dinero,int edad);
 int insertarDatosTransmite(sqlite3 *db,int CodSala,int CodPelicula,int Horario);
-int borrarPeliculaDeSala(sqlite3 *db,int tamanyoCines, struct Cine* cines);
+int borrarPeliculaDeSala(sqlite3 *db,int codSala,int codPelicula,int hora);
 
 int contadorCine(sqlite3 *db);
 int contadorSala(sqlite3 *db);

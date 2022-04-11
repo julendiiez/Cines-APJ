@@ -49,17 +49,17 @@ int insertarCine(sqlite3 *db,int tamanyo,struct Cine *cines,int maxSala){
         opc=getchar();
         fflush(stdin);
         if(opc=='1'){
-            printf("%i\n",c->codCine);
             int result=insertarDatosCine(db,tamanyo+1,c->ciudad,c->precio);
             cines[tamanyo].codCine= c->codCine;
             cines[tamanyo].ciudad=(char*)malloc((taman+1)*sizeof(char));
             cines[tamanyo].ciudad=strcpy(cines[tamanyo].ciudad,c->ciudad);
             cines[tamanyo].ciudad[taman]='\0';
             cines[tamanyo].precio=c->precio;
+            free(c);
             return result;
         }
         if(opc=='2'){
-            printf("Los datos del nuevo cine: %i, %s, %ieuros\n",tamanyo+1,c->ciudad,c->precio);
+            printf("Los datos del nuevo cine: %i, %s, %i euros\n",tamanyo+1,c->ciudad,c->precio);
         }
     }
         if(opc=='q'){
@@ -91,13 +91,10 @@ int insertarSalaACine(sqlite3 *db,int tamanyoCines,int maxSala,struct Cine *cine
          if(totSalCine<maxSala && totSalCine>0){
              for(int i=0;i<numCine;i++){
                  if(cines[i].codCine==codCine){
-                    cines[i].salas[totSalCine].codcine=codCine;
-                    cines[i].salas[totSalCine].codSala=totSala+1;
+
                     result=insertarInforSala(db,codCine,i,cines,MaxNum);
              }
              }
-         
-        
              if(result==1){
                  printf("Los datos se han introducido correctamente\n");
                  return 1;
@@ -356,6 +353,7 @@ int borrarPeliculaSala(sqlite3 *db,int tamanyoCines,struct Cine *cines){
             sscanf(str,"%i",&posHorario);
             if(posHorario>0 && posHorario<=4){
                 if(cines[posCine-1].salas[posSala-1].pelis[posHorario-1].horaComienzo!=0){
+                    int result=borrarPeliculaDeSala(db,cines[posCine-1].salas[posSala-1].codSala,cines[posCine-1].salas[posSala-1].pelis[posHorario-1].codPelicula,cines[posCine-1].salas[posSala-1].pelis[posHorario-1].horaComienzo);
                     cines[posCine-1].salas[posSala-1].pelis[posHorario-1].horaComienzo=0;
 
                 }else{
@@ -364,6 +362,7 @@ int borrarPeliculaSala(sqlite3 *db,int tamanyoCines,struct Cine *cines){
             }
         }
     }
+    
 
 
 }

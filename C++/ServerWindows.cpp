@@ -174,15 +174,16 @@ int __cdecl main(void)
                     usuario1=usuarios[i];
                     
                     
-                }
+                }                            
             }
-
+            if(coincide==false){
                 textoAEnviar=("El usuario no coincide, escribalo otra vez: ");
                 sendbuf=new char[strlen(textoAEnviar)+1];
                 for(int i=0;i<strlen(textoAEnviar);i++){
                     sendbuf[i]=textoAEnviar[i];
                 }
-                iSendResult = send( ClientSocket, sendbuf, (int)strlen(sendbuf), 0 );                     
+                iSendResult = send( ClientSocket, sendbuf, (int)strlen(sendbuf), 0 ); 
+            }                       
             
         }
         
